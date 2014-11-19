@@ -2,6 +2,10 @@
 __pycache__/
 *.py[cod]
 
+MANIFEST
+MANIFEST.in
+venv
+
 # C extensions
 *.so
 
