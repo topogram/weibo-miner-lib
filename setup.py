@@ -20,6 +20,6 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Text Processing :: Linguistic",
         ],
-    long_description = open('README.txt').read()
+    long_description = open('README.md').read()
     )
 
