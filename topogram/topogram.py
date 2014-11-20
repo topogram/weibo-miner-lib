@@ -324,11 +324,11 @@ class Topogram:
         print "Completed extraction for %d timeframes."%len(self.timeframes)
         print
 
-    def to_JSON(self):
+    def timeframes_to_JSON(self):
         """ Serialize only useful parts to JSON"""
         return json.dumps(self.timeframes, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
-    def all_to_JSON(self):
+    def to_JSON(self):
         """ Serialize the whole class to JSON"""
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
