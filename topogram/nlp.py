@@ -12,12 +12,13 @@ class NLP:
         print "init NLP toolkit"
 
         # parse list of stopwords
-        stopwords_file=path.join(here,path.join("stopwords",language+".txt"))
         
-        self.stopwords=[]
-        self.stopwords+=[i.strip() for i in open(stopwords_file,"r")]
 
         if language == "zh":
+            stopwords_file=path.join(here,path.join("stopwords",language+".txt"))
+            self.stopwords=[]
+            self.stopwords+=[i.strip() for i in open(stopwords_file,"r")]
+            
             dico_file=path.join(here,'dict/dict.txt.big')
             
             # add better support for traditional character

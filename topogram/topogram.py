@@ -14,38 +14,48 @@ import community
 
 class Topogram:
 
-    def __init__(self, languages):
+    def __init__(self, 
+                 languages=["en"], 
+                 stopwords=[], 
+                 timestamp_column="created_at",
+                 time_pattern="%Y-%m-%dT%H:%M:%S",
+                 text_column="text",
+                 message_type="weibo",
+                 source_column="uid",
+                 citation_regexp=r"@([^:：,，\)\(（）|\\\s]+)",
+                 additional_citations_column="retweeted_uid",
+                 **kwargs):
 
-        self.text_column="text"
-        self.timestamp_column="created_at"
-        self.time_pattern="%Y-%m-%dT%H:%M:%S"
-        self.message_type="weibo"
+        # columns mapping
+        self.message_type=message_type
+        self.text_column=text_column
+        self.timestamp_column=timestamp_column
+        self.time_pattern=time_pattern
+        self.source_column=source_column
+        self.additional_citations_column=additional_citations_column
 
-        self.source_column="uid"
-        self.additional_citations_column="retweeted_uid"
+        # regexp 
+        self.citation_regexp=citation_regexp
+
+        # internal data
         self.ignored_citations=[]
         self.ignored_text_regexp=[]
-
         self.cited=[]
         self.citations=[]
-
         self.words=[]
         self.words_to_words=[]
         self.words_to_cited=[]
-
         self.timeframes=[]
-
         self.words_edges={}
-
-        self.limit=500
         self.by_time={}
 
         # deal with languages
         self.languages=languages
         self.nlp = {}
-        print self.languages
         if len(self.languages) == 1 : # only one language !
             self.create_nlp(self.languages[0])
+            if len(stopwords): 
+                for word in stopwords : self.add_stopword(word, languages[0])
         else :
             raise NotImplementedError("Multiple languages yet to come...")
 
@@ -83,10 +93,10 @@ class Topogram:
     def set_citation_regexp(self, regexp):
         """ Setup regexp pattern to extract citation from text"""
         self.set_stop_regexp(regexp)
-        self.regx_citations=regexp
+        self.citation_regexp=regexp
 
     def get_citation_regexp(self):
-        return re.compile(self.regx_citations, re.UNICODE)
+        return re.compile(self.citation_regexp, re.UNICODE)
 
     def add_citation_exception(self, exception):
         if type(exception) is str:
