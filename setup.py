@@ -20,6 +20,10 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Text Processing :: Linguistic",
         ],
-    long_description = open('README.md').read()
+    long_description = open('README.md').read(),
+      install_requires=[
+          'networkx',
+          "jieba"
+      ],
     )
 
