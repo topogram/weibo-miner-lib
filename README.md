@@ -22,6 +22,13 @@ OUTPUT
 * time-based data frames (by day or by hour)
 * community detection (using Louvain algorithm)
 
+
+Packages required
+    
+    jieba-0.35.zip (7.4MB)
+    networkx
+    python-louvain
+
 ### Example
 
     weibo = Topogram() # default template is for Sina Weibo
