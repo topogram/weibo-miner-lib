@@ -152,7 +152,8 @@ class Topogram:
             citations.append( (row[self.source_column],c) )
             if c not in cited : cited.append(c)
 
-        if row[self.additional_citations_column] != None:
+        
+        if row[self.additional_citations_column] != None and additional_citations_column != None:
             citations.append( (row[self.additional_citations_column], row[self.source_column]) )
             if row[self.additional_citations_column] not in cited : cited.append(row[self.additional_citations_column])
 
