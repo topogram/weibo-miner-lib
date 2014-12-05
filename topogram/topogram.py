@@ -23,7 +23,7 @@ class Topogram:
                  message_type="weibo",
                  source_column="uid",
                  citation_regexp=r"@([^:：,，\)\(（）|\\\s]+)",
-                 additional_citations_column="retweeted_uid",
+                 additional_citations_column=None,
                  **kwargs):
 
         # columns mapping
