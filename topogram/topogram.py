@@ -198,14 +198,15 @@ class Topogram:
             "words_cited_edges" : words_to_cited
         }
 
-    def create_by_time(self, timed_info): 
-        self.add_by_time(timed_info["timestamp"],"words_nodes",timed_info["words"])
-        self.add_by_time(timed_info["timestamp"],"words_edges",timed_info["words_to_words"])
+    def create_by_time(self, timed_info):
+        print timed_info 
+        self.add_by_time(timed_info["timestamp"],"words_nodes",timed_info["words_nodes"])
+        self.add_by_time(timed_info["timestamp"],"words_edges",timed_info["words_edges"])
 
-        self.add_by_time(timed_info["timestamp"],"cited_edges",timed_info["citations"])
-        self.add_by_time(timed_info["timestamp"],"cited_nodes",timed_info["cited"])
+        self.add_by_time(timed_info["timestamp"],"cited_edges",timed_info["cited_edges"])
+        self.add_by_time(timed_info["timestamp"],"cited_nodes",timed_info["cited_nodes"])
 
-        self.add_by_time(timed_info["timestamp"],"words_cited_edges",timed_info["words_to_cited"])
+        self.add_by_time(timed_info["timestamp"],"words_cited_edges",timed_info["words_cited_edges"])
 
 
 
