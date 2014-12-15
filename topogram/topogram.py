@@ -189,6 +189,16 @@ class Topogram:
         # store data by time
         timestamp=self.get_timeframe(row[self.timestamp_column])
 
+        return {
+            "timestamp" : timestamp,
+            "words_nodes" : words,
+            "words_edges" : words_to_words,
+            "cited_edges" : citations,
+            "cited_nodes" : cited,
+            "words_cited_edges" : words_to_cited
+        }
+
+    def create_by_time(self, timed_info): 
         self.add_by_time(timestamp,"words_nodes",words)
         self.add_by_time(timestamp,"words_edges",words_to_words)
 
@@ -196,6 +206,8 @@ class Topogram:
         self.add_by_time(timestamp,"cited_nodes",cited)
 
         self.add_by_time(timestamp,"words_cited_edges",words_to_cited)
+
+
 
     def get_top_nodes(self, nodes, limit):
         """ Apply a  size limit to an array"""
