@@ -209,6 +209,18 @@ class Topogram:
         self.add_by_time(timed_info["timestamp"],"words_cited_edges",timed_info["words_cited_edges"])
 
 
+    def load_from_processed(self, message):
+
+        # add by time
+        self.create_by_time(message)
+
+        # global lists
+        self.citations += message["cited_edges"]
+        self.cited += [c for c in message["cited_nodes"] if c not in self.cited ]
+        self.words+=[w for w in message["words_nodes"] if w not in self.words]
+        self.words_to_words+=message["words_edges"]
+        self.words_to_cited+=message["words_cited_edges"]
+
     def get_top_nodes(self, nodes, limit):
         """ Apply a  size limit to an array"""
         return  [c[0] for c in Counter(nodes).most_common(limit)]
