@@ -210,6 +210,7 @@ class Topogram:
 
 
     def load_from_processed(self, message):
+        """Load pre-processed documents"""
 
         # add by time
         self.create_by_time(message)
@@ -233,7 +234,7 @@ class Topogram:
 
         return [
             (p[0][0],p[0][1],p[1]) 
-            for p in Counter(tuple(edges)).most_common()
+            for p in Counter([tuple(e) for e in edges]).most_common()
             if p[1]>minimum_weight
         ]
 
@@ -266,7 +267,7 @@ class Topogram:
         return G
 
     def create_networks(self):
-        print
+
         print "creating networks"
 
         # WORDS
@@ -282,7 +283,7 @@ class Topogram:
         # CITATIONS
         print
         print "-"*10+" Citations"
-        citations_graph= self.create_network(self.cited, self.citations, 100, 0)
+        self.citations_graph= self.create_network(self.cited, self.citations, 100, 0)
 
         self.cited_allowed=[self.cited[int(w)] for w in citations_graph.nodes()]
         print "%d cited_allowed"%len(self.cited_allowed)
@@ -291,66 +292,70 @@ class Topogram:
         self.citations_communities = community.best_partition(citations_graph.to_undirected()) 
         print "Number of citations partitions : ", len(set(self.citations_communities.values()))
 
-        print
-
-    # OUTPUT DATA
-    def create_timeframes(self):
-        print 'Creating Timeframes'
-        for timestamp in self.by_time:
-
-            print "-"*12+str(timestamp)
-            timeframe={}
-            timeslot=self.by_time[timestamp]
-
-            timeframe["cited_nodes"]=[{
+    def create_clean_data(self, original_data): 
+            clean_data={}
+            clean_data["cited_nodes"]=[{
                   "name":u[0],
                   "count":u[1],
                   # "community":user_communities[u[0]]
                   } 
-                 for u in Counter(timeslot["cited_nodes"]).most_common() 
+                 for u in Counter(original_data["cited_nodes"]).most_common() 
                  if u[0] in self.cited_allowed
                  ]
-            print "%d cited"%len(timeframe["cited_nodes"])
+            print "%d cited"%len(clean_data["cited_nodes"])
 
-            timeframe["cited_edges"]=[{
+            clean_data["cited_edges"]=[{
                 "source":u[0][0],
                 "target":u[0][1],
                 "weight":u[1]
                 } 
-                for u in Counter(timeslot["cited_edges"]).most_common()
+                for u in Counter(original_data["cited_edges"]).most_common()
                 if u[0][0] in self.cited_allowed
                 and u[0][1] in self.cited_allowed
                 ]
-            print "%d citations"%len(timeframe["cited_edges"])
+            print "%d citations"%len(clean_data["cited_edges"])
 
-            timeframe["words_nodes"]=[{
+            clean_data["words_nodes"]=[{
                 "name":w[0],
                 "count":w[1],
                 # "community":self.words_communities[str(w[0])]
                 } 
-                for w in Counter(timeslot["words_nodes"]).most_common()
+                for w in Counter(original_data["words_nodes"]).most_common()
                 if w[0] in self.words_allowed
                 ]
-            print "%d words"%len(timeframe["words_nodes"])
+            print "%d words"%len(clean_data["words_nodes"])
 
-            timeframe["words_edges"]=[{ 
+            clean_data["words_edges"]=[{ 
                 "source":w[0][0],
                 "target":w[0][1],
                 "weight":w[1]}
-                for w in Counter(timeslot["words_edges"]).most_common()
+                for w in Counter(original_data["words_edges"]).most_common()
                 if w[0][1] in self.words_allowed
                 and w[0][1] in self.words_allowed
                 ]
-            print "%d words edges"%len(timeframe["words_edges"])
-            
-            
+            print "%d words edges"%len(clean_data["words_edges"])
+
+            return clean_data
+
+    # OUTPUT DATA
+    def create_timeframes(self):
+        print 'Creating Timeframes'
+
+        for timestamp in self.by_time:
+            print "-"*12+str(timestamp)
+            timeslot=self.by_time[timestamp]
+            timeframe=self.create_clean_data(timeslot)
             self.timeframes.append({"time":timestamp, "data":timeframe})
-        
+
         print "Completed extraction for %d timeframes."%len(self.timeframes)
         print
 
     def timeframes_to_JSON(self):
-        """ Serialize only useful parts to JSON"""
+        """ Serialize only ttimeframes to JSON"""
+        return json.dumps(self.timeframes, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
+    def networks_to_JSON(self):
+        """ Serialize only  networks  to JSON"""
         return json.dumps(self.timeframes, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
     def to_JSON(self):
