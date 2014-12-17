@@ -22,6 +22,8 @@ class Topogram:
                  text_column="text",
                  message_type="weibo",
                  source_column="uid",
+                 limit_words = 100,
+                 limit_citations = 100,
                  citation_regexp=r"@([^:：,，\)\(（）|\\\s]+)",
                  additional_citations_column=None,
                  **kwargs):
@@ -48,6 +50,10 @@ class Topogram:
         self.timeframes=[]
         self.words_edges={}
         self.by_time={}
+
+        # limits
+        self.limit_words = limit_words
+        self.limit_citations = limit_citations
 
         # deal with languages
         self.languages=languages
@@ -272,7 +278,7 @@ class Topogram:
 
         # WORDS
         print "-"*10+" Words"
-        words_graph= self.create_network(self.words, self.words_to_words, 20, 1)
+        words_graph= self.create_network(self.words, self.words_to_words, self.limit_words, 1)
 
         self.words_allowed=[self.words[int(w)] for w in words_graph.nodes()]
         print "%d words_allowed"%len(self.words_allowed)
@@ -283,7 +289,7 @@ class Topogram:
         # CITATIONS
         print
         print "-"*10+" Citations"
-        self.citations_graph= self.create_network(self.cited, self.citations, 100, 0)
+        citations_graph= self.create_network(self.cited, self.citations, self.limit_citations, 0)
 
         self.cited_allowed=[self.cited[int(w)] for w in citations_graph.nodes()]
         print "%d cited_allowed"%len(self.cited_allowed)
@@ -336,6 +342,77 @@ class Topogram:
             print "%d words edges"%len(clean_data["words_edges"])
 
             return clean_data
+
+
+    def get_d3_networks(self):
+        # init
+        dataService={}
+        dataService["citations"]={}
+        dataService["words"]={}
+
+        dataService["citations"]["nodes"]=[]
+        dataService["citations"]["edges"]=[]
+        dataService["citations"]["index"]=[]
+
+        dataService["words"]["nodes"]=[]
+        dataService["words"]["edges"]=[]
+        dataService["words"]["index"]=[]
+
+        # dataService["wordsProvince"]={}
+        # dataService["geo"]=[]
+
+        d= self.get_networks() # dataframe
+
+        for cited in d["cited_nodes"]:
+            if cited["name"] not in dataService["citations"]["index"]:
+                dataService["citations"]["nodes"].append(cited);
+                dataService["citations"]["index"].append(cited["name"]);
+
+        for edge in d["cited_edges"]:
+
+            if edge["source"] in dataService["citations"]["index"] and edge["target"] in dataService["citations"]["index"]:
+
+                existing_edge=next((item for item in dataService["citations"]["edges"] if item["source"] == edge["source"] and item["target"] == edge["target"]), None)
+
+                if existing_edge:
+                    existing_edge["weight"]=existing_edge["weight"]+1
+                else :
+                    dataService["citations"]["edges"].append(edge)
+
+
+        for cited in d["words_nodes"]:
+            if cited["name"] not in dataService["words"]["index"]:
+                dataService["words"]["nodes"].append(cited);
+                dataService["words"]["index"].append(cited["name"]);
+
+        for edge in d["words_edges"]:
+
+            if edge["source"] in dataService["words"]["index"] and edge["target"] in dataService["words"]["index"]:
+
+                existing_edge=next((item for item in dataService["words"]["edges"] if item["source"] == edge["source"] and item["target"] == edge["target"]), None)
+
+                if existing_edge:
+                    existing_edge["weight"]=existing_edge["weight"]+1
+                else :
+                    dataService["words"]["edges"].append(edge)
+
+
+        return dataService
+
+    def get_networks(self):
+        # compute networks
+        self.create_networks()
+
+        # reformat data
+        data={}
+        data["cited_nodes"]=self.cited
+        data["cited_edges"]=[tuple(c) for c in self.citations]
+        data["words_nodes"]=self.words
+        data["words_edges"]=[tuple(w) for w in self.words_to_words]
+
+        return self.create_clean_data(data)
+
+
 
     # OUTPUT DATA
     def create_timeframes(self):
