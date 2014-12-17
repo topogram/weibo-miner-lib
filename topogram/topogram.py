@@ -280,23 +280,25 @@ class Topogram:
         print "-"*10+" Words"
         words_graph= self.create_network(self.words, self.words_to_words, self.limit_words, 1)
 
-        self.words_allowed=[self.words[int(w)] for w in words_graph.nodes()]
-        print "%d words_allowed"%len(self.words_allowed)
+        if words_graph.order() != 0: 
+            self.words_allowed=[self.words[int(w)] for w in words_graph.nodes()]
+            print "%d words_allowed"%len(self.words_allowed)
 
-        self.words_communities = community.best_partition(words_graph.to_undirected()) 
-        print "Number of words partitions : ", len(set(self.words_communities.values()))
+            self.words_communities = community.best_partition(words_graph.to_undirected()) 
+            print "Number of words partitions : ", len(set(self.words_communities.values()))
 
         # CITATIONS
         print
         print "-"*10+" Citations"
         citations_graph= self.create_network(self.cited, self.citations, self.limit_citations, 0)
 
-        self.cited_allowed=[self.cited[int(w)] for w in citations_graph.nodes()]
-        print "%d cited_allowed"%len(self.cited_allowed)
+        if citations_graph.order() != 0:
+            self.cited_allowed=[self.cited[int(w)] for w in citations_graph.nodes()]
+            print "%d cited_allowed"%len(self.cited_allowed)
 
-        # Communities
-        self.citations_communities = community.best_partition(citations_graph.to_undirected()) 
-        print "Number of citations partitions : ", len(set(self.citations_communities.values()))
+            # Communities
+            self.citations_communities = community.best_partition(citations_graph.to_undirected()) 
+            print "Number of citations partitions : ", len(set(self.citations_communities.values()))
 
     def create_clean_data(self, original_data): 
             clean_data={}
