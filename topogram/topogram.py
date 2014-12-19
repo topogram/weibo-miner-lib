@@ -29,12 +29,12 @@ class Topogram:
                  **kwargs):
 
         # columns mapping
-        self.message_type=message_type
-        self.text_column=text_column
-        self.timestamp_column=timestamp_column
-        self.time_pattern=time_pattern
-        self.source_column=source_column
-        self.additional_citations_column=additional_citations_column
+        self.message_type=message_type.decode("utf-8")
+        self.text_column=text_column.decode("utf-8")
+        self.timestamp_column=timestamp_column.decode("utf-8")
+        self.time_pattern=time_pattern.decode("utf-8")
+        self.source_column=source_column.decode("utf-8")
+        self.additional_citations_column=additional_citations_column.decode("utf-8")
 
         # regexp 
         self.citation_regexp=citation_regexp
