@@ -1,45 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import jieba 
-import jieba.analyse
-from os import path
 
-here=path.dirname(path.abspath(__file__))
+import re
+import logging
+logger = logging.getLogger('topogram.nlp')
 
 class NLP:
-    def __init__(self, language): 
-        print "init NLP toolkit"
+    """
+    Interface (abstract base class) for NLP and text cleaning.
+    This class should be instantiated to describe a specific language.
 
-        # parse list of stopwords
-        
+    """
 
-        if language == "zh":
-            stopwords_file=path.join(here,path.join("stopwords",language+".txt"))
-            self.stopwords=[]
-            self.stopwords+=[i.strip() for i in open(stopwords_file,"r")]
-            
-            dico_file=path.join(here,'dict/dict.txt.big')
-            
-            # add better support for traditional character
-            jieba.set_dictionary(dico_file)
-            
-            # setup word extractor
-            # self.extract_keywords = self.zh_extract_keywords
-            self.extract_dictionary = self.zh_extract_dictionary
+    def __init__(self): 
+        logger.info("init NLP class")
+        self.stopwords=[]
+        self.stop_regexps=[]
 
-        else :
-            raise NotImplementedError("More languages to come...")
+    def extract_keywords(self,txt):
+        """ Method to extract keywords from a string"""
+        raise NotImplementedError('Not available for abstract base class. You should instantiate this class for a specific language')
 
-    def zh_extract_keywords(self,txt):
-        """ Extract keywords from Chinese text""" 
-        tags = jieba.analyse.extract_tags(txt, 20)
-        return tags
-
-    def zh_extract_dictionary(self,txt):
-        """ Extract from Chinese text"""
-        seg_list = jieba.cut(txt, cut_all=False)  # 搜索引擎模式
-        return list(seg_list)
+    def extract_dictionary(self,txt):
+        """ Method to extract dictionary from a string"""
+        raise NotImplementedError('Not available for abstract base class. You should instantiate this class for a specific language')
 
     def get_words(self, txt):
         """ Get words w/o stopwords. Returns a list of words"""
@@ -51,7 +36,23 @@ class NLP:
         """ Add a stopword to the list of stopwords"""
         self.stopwords.append(word)
 
-    def filter_stopwords(self,txt):
+    def filter_out_stopwords(self,txt):
         """ Remove stopwords from text"""
         txt_wo_stopwords=[w for w in txt if w not in self.stopwords]
         return txt_wo_stopwords
+
+    def add_stop_regexp(self, regexp):
+        """ Add a regexp pattern to ignore while processing text  """ 
+        self.stop_regexps.append(re.compile(regexp, re.UNICODE))
+
+    def filter_out_regexps(self, txt):
+        """ Remove all elements following defined regexp patterns"""
+        clean=txt
+        for regexp in self.stop_regexps:
+            for junks in regexp.findall(txt):
+                if type(junks) is str:
+                    clean=clean.replace(junks,"")
+                else :
+                    for junk in junks:
+                        clean=clean.replace(junk,"")
+        return clean

@@ -34,6 +34,7 @@ class Topogram:
         self.time_pattern=str(time_pattern)
         self.source_column=str(source_column)
         self.additional_citations_column=additional_citations_column
+        
         # regexp 
         self.citation_regexp=citation_regexp
 

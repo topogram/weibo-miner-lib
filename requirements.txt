@@ -1,1 +1,3 @@
 jieba
+nose
+rednose
