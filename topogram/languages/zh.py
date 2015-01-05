@@ -5,6 +5,8 @@ import os
 import jieba
 import jieba.analyse
 from topogram.nlp import NLP
+from topogram.utils import any2utf8
+
 import logging 
 
 logger = logging.getLogger('topogram.nlp.zh')
@@ -32,7 +34,7 @@ class ChineseNLP(NLP):
     def extract_keywords(self,txt):
         """ Extract keywords from Chinese text""" 
         tags = jieba.analyse.extract_tags(txt, 20)
-        return tags
+        return [ any2utf8(tag) for tag in tags]
 
     def extract_dictionary(self,txt):
         """ Extract from Chinese text"""

@@ -30,5 +30,21 @@ class TestCSVCorpus(unittest.TestCase):
             self.assertTrue(isinstance(row[0], str))
             self.assertTrue(isinstance(row[1], datetime))
 
+    def test_len(self):
+        self.assertTrue(len(self.corpus) == 121)
+
+    def test_pandas_csv_parsing(self):
+        # date parsing
+        self.assertTrue(self.corpus.df["created_at"][0].year == 2012)
+
+    def test_timeframe(self):
+        self.assertRaises(ValueError, lambda : self.corpus.set_timeframe('bla', 0))
+        self.corpus.set_timeframe('2012-01-03',  '2012-04-02')
+        self.assertTrue(len(self.corpus) == 58)
+        self.assertTrue(len([row for row in self.corpus]) == 58)
+
+        self.corpus.reset_timeframe()
+        self.assertTrue(len([row for row in self.corpus]) == 121)
+
 if __name__ == '__main__':
     unittest.main()

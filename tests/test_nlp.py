@@ -40,5 +40,8 @@ class TestChineseNLP(unittest.TestCase):
         self.assertTrue("的" in self.nlp.stopwords)
 
     def test_extract_keywords(self):
-        print self.nlp.extract_keywords("就是什么东西啦")
-        self.assertTrue(False)
+        keywords = self.nlp.extract_keywords("就是什么东西啦")
+        self.assertTrue( type(keywords[0]) is str)
+        self.assertTrue( len(keywords) == 3)
+        self.assertTrue( "东西" in keywords)
+
