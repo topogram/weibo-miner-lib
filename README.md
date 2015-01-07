@@ -3,6 +3,7 @@
 
 Topogram is a  Python library for extracting and visualizing *networks of words and citations* from raw data (Twitter, Weibo, news, etc...) Target audience is developers, researchers, journalists interested in an easy way to analyze texts.
 
+Documentation available at [topogram.readthedocs.org](http://topogram.readthedocs.org)
 
 ### Features
 
