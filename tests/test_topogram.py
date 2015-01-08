@@ -2,25 +2,30 @@
 # -*- coding: utf-8 -*-
 
 import os
+import json
 import  unittest
 from datetime import datetime
 from topogram.topogram import Topogram
 from topogram.languages.zh import ChineseNLP 
-from topogram.corpora.csv_corpus import CSVCorpus
+from topogram.corpora.csv import CSVCorpus
 from topogram.topograms.basic import BasicTopogram
+
+# get a csv corpus
+csv_path = os.path.join(os.getcwd(), "tests/sampleweibo.csv")
+corpus = CSVCorpus(csv_path, source_column="uid", time_pattern="%Y-%m-%d %H:%M:%S")
+
+# get Chinese NLP
+nlp = ChineseNLP()
+nlp.add_stopword("ukn")
 
 class TestTopogram(unittest.TestCase):
 
     def setUp(self):
-        # get a csv corpus
-        csv_path = os.path.join(os.getcwd(), "tests/sampleweibo.csv")
-        self.corpus = CSVCorpus(csv_path, source_column="uid", time_pattern="%Y-%m-%d %H:%M:%S")
-
-        # get Chinese NLP
-        self.nlp = ChineseNLP()
 
         # create topogram
-        self.topogram = Topogram(self.corpus, self.nlp)
+        self.topogram = Topogram(corpus, nlp)
+        self.nlp = nlp
+        self.corpus = corpus
 
     def add_nx_data(self):
         # random data to test  
@@ -40,20 +45,21 @@ class TestTopogram(unittest.TestCase):
 
     def test_extract_citations(self):
         # add a citation pattern
-        urlPattern=r"\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^\p{P}\s]|/)))"
-        self.topogram.add_citation_regexp(urlPattern)
+        hashtagPattern=r"#([^#\s]+)#"
+        self.topogram.add_citation_regexp(hashtagPattern)
+
         # extract citation
-        citations = self.topogram.extract_citations("bonjour http://topogram.io http://topogram.io")
-        self.assertTrue(len(citations) == 2)
+        citations = self.topogram.extract_citations("bonjour #yoyo# #yoyo# #yaya#")
+        self.assertTrue(len(citations) == 3)
 
     def test_ignore_citations(self):
         # add a citation pattern
-        urlPattern=r"\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^\p{P}\s]|/)))"
-        self.topogram.add_citation_regexp(urlPattern)
+        hashtagPattern=r"#([^#\s]+)#"
+        self.topogram.add_citation_regexp(hashtagPattern)
         
         # extract citation
-        self.topogram.add_citation_to_ignore("http://google.com")
-        citations = self.topogram.extract_citations("bonjour http://topogram.io http://topogram.io http://google.com")
+        self.topogram.add_citation_to_ignore("yaya")
+        citations = self.topogram.extract_citations("bonjour #yoyo# #yoyo# #yaya#")
         self.assertTrue(len(citations) == 2)
 
     def test_has_networks(self):
@@ -75,30 +81,49 @@ class TestTopogram(unittest.TestCase):
         self.assertTrue( type(d3_json["links"]) is list)
 
     def test_specific_timeframes(self):
-        start = datetime.now()
-        stop = datetime.now()
-
-        self.assertRaises(TypeError, lambda : self.topogram.set_time_limit(0, stop))
-        self.assertRaises(TypeError, lambda : self.topogram.set_time_limit(start, 0))
+        self.topogram.set_timeframe('2012-01-03', '2012-04-02')
+        self.assertTrue(len(self.topogram.corpus) == 58)
+        self.topogram.reset_timeframe()
+        self.assertTrue(len(self.topogram.corpus) == 121)
 
 class TestBasicTopogram(unittest.TestCase):
 
     def setUp(self):
-        # get a csv corpus
-        csv_path = os.path.join(os.getcwd(), "tests/sampleweibo.csv")
-        self.corpus = CSVCorpus(csv_path, source_column="uid", time_pattern="%Y-%m-%d %H:%M:%S")
-
-        # get Chinese NLP
-        self.nlp = ChineseNLP()
 
         # create topogram
-        self.topogram = BasicTopogram(self.corpus, self.nlp)
+        self.topogram = BasicTopogram(corpus, nlp)
+
+        self.topogram.add_citation_to_ignore("ukn")
+        self.topogram.add_citation_to_ignore("uid")
+
+        urlPattern=r"\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^\p{P}\s]|/)))"
+        hashtagPattern=r"#([^#\s]+)#"
+        self.topogram.nlp.add_stop_regexp(urlPattern)
+
+        # self.topogram.nlp.add_stopword(u' ')
 
     def test_process(self):
         self.topogram.process()
         self.assertTrue(self.topogram.citations.order() != 0)
 
+    def test_list_of_top_words(self):
+        self.topogram.process()
+        top_words = self.topogram.get_top_words(150)
+        # print top_words
+        self.assertTrue(len(top_words) == 2)
+        top_citations = self .topogram.get_top_citations(20)
+        print top_citations
+        self.assertTrue(len(top_citations) == 1)
 
+    def test_densities(self):
+        self.topogram.process()
+        self.assertTrue(self.topogram.get_words_density() < 1)
+        self.assertTrue(self.topogram.get_citations_density() < 1)
+
+    def test_top_graphs(self):
+        self.topogram.process()
+        self.topogram.get_words_network(200)
+        self.assertTrue(False)
 
 if __name__ == '__main__':
     unittest.main()

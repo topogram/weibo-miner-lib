@@ -7,6 +7,8 @@ from networkx.readwrite import json_graph
 from datetime import datetime
 from nlp import NLP
 from corpus import Corpus
+from collections import Counter
+from utils import any2utf8
 
 class Topogram:
     """
@@ -25,7 +27,8 @@ class Topogram:
         """
         citations=[]
         for regexp in self.citation_regexps :
-            citations += [ citation for citation in regexp.findall(txt) if citation[0] not in self.ignored_citations ]
+            for x in regexp.findall(txt):
+                if x not in self.ignored_citations : citations.append(x)
         return citations
 
     def add_citation_regexp(self, regexp):
@@ -83,16 +86,45 @@ class Topogram:
         self.start = None
         self.end = None
 
-    def set_time_limit(self, start, end):
-        if not isinstance(start, datetime):
-            raise TypeError("Topogram 'start' should be a datetime object")
-        else :
-            self.start = start
+    def set_timeframe(self, start, end):
+        """ specific timeframe to process """
+        self.corpus.set_timeframe(start, end)
 
-        if not isinstance(end, datetime):
-            raise TypeError("Topogram 'end' should be a datetime object")
-        else :
-            self.end = end
+    def reset_timeframe(self):
+        """ Cancel specific timeframe to process"""
+        self.corpus.reset_timeframe()
+
+    def get_top_nodes(self, graph, min):
+        """ get most important nodes in a graph"""
+        degrees =  graph.degree()
+        return [ { "node" : word , "degree":  degrees[word]} for word in sorted(degrees, key=lambda x: degrees[x], reverse=True) if degrees[word] > min]
+
+    def get_top_words(self, min):
+        """ Get most important words (based on network degree) """
+        return self.get_top_nodes(self.words, min)
+
+    def get_top_citations(self, min):
+        """ Get most important words (based on network degree) """
+        return self.get_top_nodes(self.citations, min)
+
+    def get_node_network(self, graph, min):
+        """ Get most important words (based on network degree) """
+        nodes = self.get_top_nodes(graph, min)
+        for node in nodes :
+            nodes 
+
+    def get_words_network(self, min):
+        """ get a graph of words given a maximum number of nodes """
+        self.get_node_network(self.words, min)
+
+    def get_words_density(self):
+        """ Return the density of the words graph. (The density is 0 for a graph without edges and 1 for a complete graph.) """
+        return nx.density(self.words)
+
+    def get_citations_density(self):
+        """ Return the density of the words graph. (The density is 0 for a graph without edges and 1 for a complete graph.) """
+        return nx.density(self.citations)
+
 
     def process(self):
         """ Method to extract all knowledge from corpus"""

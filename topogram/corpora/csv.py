@@ -112,10 +112,10 @@ class CSVCorpus(Corpus):
         """
         Iterate over the corpus, returning a tuple with text as a 'str' and timestamp as a 'datetime' object.
         """
-        
+
         for index, row in self.get_data().iterrows():
             text = any2utf8(row[self.text_column])
-            yield(text, row[self.timestamp_column])
+            yield(text, row[self.timestamp_column], row[self.source_column])
             self.length =  self.length + 1  # store the total number of CSV rows
 
     def __len__(self):

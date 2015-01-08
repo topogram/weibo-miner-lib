@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from topogram.corpora.csv_corpus import CSVCorpus
+from topogram.corpora.csv import CSVCorpus
 import unittest
 import os
 from datetime import datetime
