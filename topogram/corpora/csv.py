@@ -4,6 +4,8 @@
 import itertools
 import csv
 from datetime import datetime
+import pandas as pd
+
 from topogram.corpus import Corpus
 from topogram.utils import any2utf8
 
@@ -27,7 +29,6 @@ class CSVCorpus(Corpus):
     source_column="uid" (should be an existing column name)
  
     """
-
 
     def validate_csv(self):
             """
@@ -71,6 +72,7 @@ class CSVCorpus(Corpus):
         self.time_pattern = time_pattern
         self.text_column = text_column
         self.source_column = source_column
+        self.length = 0
 
         # load the first few lines, to guess the CSV dialect
         head = ''.join(itertools.islice(open(self.fname), 5))
@@ -81,22 +83,41 @@ class CSVCorpus(Corpus):
         # validate fields in CSV
         self.validate_csv()
 
+        # lazy load // open file w pandas // parse date
+        date_parser = lambda x : datetime.strptime(x, self.time_pattern)
+        self.df = pd.read_csv(self.fname, dialect=self.dialect, dtype=object, parse_dates=[self.timestamp_column], date_parser=date_parser, encoding="utf-8") # iterator=True, chunksize=100, 
+        
+        # time frames
+        self.start = None
+        self.end = None
+
+    def reset_timeframe(self):
+        self.start = None
+        self.stop = None
+
+    def set_timeframe(self, start, stop):
+        self.start = pd.to_datetime(start)
+        self.end =  pd.to_datetime(stop)
+
+        if type(self.start) is not pd.tslib.Timestamp or type(self.end) is not pd.tslib.Timestamp :
+            raise ValueError("'start' or 'stop' are not a valid date time")
+
+    def get_data(self):
+        if self.start and self.end: 
+            return self.df[ (self.df[self.timestamp_column] > self.start) & (self.df[self.timestamp_column] < self.end) ]
+        else :
+            return  self.df
+
     def __iter__(self):
         """
         Iterate over the corpus, returning a tuple with text as a 'str' and timestamp as a 'datetime' object.
         """
-        reader = csv.reader(open(self.fname), self.dialect)
 
-        if self.has_headers:
-            next(reader)    # skip the headers
+        for index, row in self.get_data().iterrows():
+            text = any2utf8(row[self.text_column])
+            yield(text, row[self.timestamp_column], row[self.source_column])
+            self.length =  self.length + 1  # store the total number of CSV rows
 
-        line_no = -1
-        for line_no, line in enumerate(reader):
-
-            timestamp = line[self.headers.index(self.timestamp_column)]
-            datetime_timestamp = datetime.strptime(timestamp, self.time_pattern)
-
-            text = any2utf8(line[self.headers.index(self.text_column)])
-            yield(text, datetime_timestamp)
-
-            self.length = line_no + 1  # store the total number of CSV rows
+    def __len__(self):
+        """ this gives the length of the corpus - works only it has already been processed once"""
+        return self.get_data().shape[0]
