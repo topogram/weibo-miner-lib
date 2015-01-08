@@ -22,10 +22,17 @@ class ChineseNLP(NLP):
     def __init__(self):
 
         logger.info("init Chinese NLP logger")
+        self.stopwords=[" "]
+
         # parse chinese stopwords
-        self.stopwords=[]
         stopwords_file=os.path.join(here,os.path.join("stopwords","zh.txt"))
         self.stopwords+=[i.strip() for i in open(stopwords_file,"r")]
+        
+        # parse generic stopwords
+        stopwords_file=os.path.join(here,os.path.join("stopwords","all.txt"))
+        self.stopwords+=[i.strip() for i in open(stopwords_file,"r")]
+
+        self.stop_regexps = []
 
         # add better support for traditional character
         dico_file=os.path.join(here,'dict/dict.txt.big')

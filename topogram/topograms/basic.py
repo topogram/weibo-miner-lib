@@ -29,23 +29,26 @@ class BasicTopogram(Topogram):
         """
         # logger.info("new row")
 
+        # print row
         txt = row[0]
-        timestamp = [1]
-        source = [2]
+        timestamp = row[1]
+        source = row[2]
+
+        clean = self.nlp.filter_out_regexps(txt)
+
+        # citations
+        citations = self.extract_citations(clean)
+
+        for citation in citations :
+            self.citations.add_edge(source, citation)
 
         # words co-ocurence
-        keywords = self.nlp.extract_keywords(txt)
+        keywords = self.nlp.get_words(clean)
         for w1 in keywords:
             for w2 in keywords : 
                 if w1!=w2 :
-                    self.words.add_edge(w1, w2, { "timestamp" : timestamp})
+                    self.words.add_edge(w1, w2)
 
-        # citations
-        source = self.corpus.source_column
-        citations = self.extract_citations(txt)
-
-        for citation in citations :
-            self.citations.add_edge( source, citation,{ "timestamp" : timestamp})
 
         # if self.additional_citations_column != None : 
         #     if row[self.additional_citations_column] != None:
