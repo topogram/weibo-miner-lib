@@ -10,6 +10,11 @@ from corpus import Corpus
 from collections import Counter
 from utils import any2utf8
 
+try:
+    import cPickle as _pickle
+except ImportError:
+    import pickle as _pickle
+
 class Topogram:
     """
     base class to extract citations from text and generate networks of citations and words.
@@ -58,7 +63,7 @@ class Topogram:
         else:
             self.citations.add_edge(source, target, weight= 1)
 
-    def __init__(self, corpus, nlp, citation_regexp=r"@([^:：,，\)\(（）|\\\s]+)"):
+    def __init__(self, corpus=Corpus, nlp=NLP, citation_regexp=r"@([^:：,，\)\(（）|\\\s]+)"):
         """
         Initialize a topogram from a corpus and a NLP processor.
         Optional : regexp parser  
@@ -106,6 +111,8 @@ class Topogram:
     def get_top_citations(self, min):
         """ Get most important words (based on network degree) """
         return self.get_top_nodes(self.citations, min)
+
+
 
     def get_node_network(self, graph, min):
         """ Get most important words (based on network degree) """

@@ -12,17 +12,6 @@ class BasicTopogram(Topogram):
     Simple topogram to extract citations networks and co-occurence of words in documents.
     """
 
-    def process(self):
-        """ process the whole corpus"""
-
-        for row in self.corpus:
-            # print row
-            self.process_row(row)
-
-        logger.info("All row processed. %d documents"%self.corpus.length)
-        logger.info("All row processed. %d words and %d edges"%(self.words.number_of_nodes(), self.words.number_of_edges() ), )
-        logger.info("All row processed. %d citations and %d edges"%(self.citations.number_of_nodes(), self.citations.number_of_edges() ), )
-
     def process_row(self, row) :
         """
         Extract citations from a single row of raw data.
@@ -59,3 +48,14 @@ class BasicTopogram(Topogram):
         for w in keywords:
             for u in citations:
                 self.words_to_citations.add_edge(w,u)
+
+    def process(self):
+        """ process the whole corpus"""
+
+        for row in self.corpus:
+            # print row
+            self.process_row(row)
+
+        logger.info("All row processed. %d documents"%self.corpus.length)
+        logger.info("All row processed. %d words and %d edges"%(self.words.number_of_nodes(), self.words.number_of_edges() ), )
+        logger.info("All row processed. %d citations and %d edges"%(self.citations.number_of_nodes(), self.citations.number_of_edges() ), )
