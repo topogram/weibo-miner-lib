@@ -112,8 +112,6 @@ class Topogram:
         """ Get most important words (based on network degree) """
         return self.get_top_nodes(self.citations, min)
 
-
-
     def get_node_network(self, graph, min):
         """ Get most important words (based on network degree) """
         nodes = self.get_top_nodes(graph, min)
@@ -131,7 +129,6 @@ class Topogram:
     def get_citations_density(self):
         """ Return the density of the words graph. (The density is 0 for a graph without edges and 1 for a complete graph.) """
         return nx.density(self.citations)
-
 
     def process(self):
         """ Method to extract all knowledge from corpus"""

@@ -29,14 +29,14 @@ class BasicTopogram(Topogram):
         citations = self.extract_citations(clean)
 
         for citation in citations :
-            self.citations.add_edge(source, citation)
+            self.add_citations_edge(source, citation)
 
         # words co-ocurence
         keywords = self.nlp.get_words(clean)
         for w1 in keywords:
             for w2 in keywords : 
                 if w1!=w2 :
-                    self.words.add_edge(w1, w2)
+                    self.add_words_edge(w1, w2)
 
 
         # if self.additional_citations_column != None : 
