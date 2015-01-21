@@ -38,7 +38,6 @@ class BasicTopogram(Topogram):
                 if w1!=w2 :
                     self.add_words_edge(w1, w2)
 
-
         # if self.additional_citations_column != None : 
         #     if row[self.additional_citations_column] != None:
         #         citations.append( (row[self.additional_citations_column], row[self.source_column]) )
@@ -51,9 +50,8 @@ class BasicTopogram(Topogram):
 
     def process(self):
         """ process the whole corpus"""
-
+        logger.info("Start processing the corpus")
         for row in self.corpus:
-            # print row
             self.process_row(row)
 
         logger.info("All row processed. %d documents"%self.corpus.length)

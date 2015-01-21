@@ -48,8 +48,7 @@ class TestCSVCorpus(unittest.TestCase):
         self.assertRaises(TypeError, lambda : CSVCorpus(csv_path))
         # self.assertTrue(len(self.corpus) == 12)
 
-    def test_index(self):
-
+    # def test_index(self):
     # def test_pandas_csv_parsing(self):
     #     # date parsing
     #     self.assertTrue(self.corpus.df["created_at"][0].year == 2012)
