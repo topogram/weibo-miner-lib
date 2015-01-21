@@ -45,6 +45,7 @@ class BasicTopogram(Topogram):
         """ process the whole corpus"""
         logger.info("Start processing the corpus")
         for row in self.corpus:
+            print row
             self.process_row(row)
 
         logger.info("All row processed. %d documents"%self.corpus.length)

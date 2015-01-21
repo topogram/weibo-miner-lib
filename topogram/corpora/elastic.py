@@ -43,8 +43,7 @@ class ElasticCorpus(Corpus):
             if chunk +self.chunksize > len(self) : per = 100
 
             for message in results["hits"]["hits"] :
-                yield  [ message['_source'][key] for key in message['_source']]
-
+                yield message['_source']
 
 
     # def get_results_by_chunk(self):

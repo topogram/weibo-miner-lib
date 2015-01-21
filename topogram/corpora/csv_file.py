@@ -44,7 +44,17 @@ class CSVCorpus(Corpus):
         self.text_column = text_column
         self.source_column = source_column
         self.length = 0
-        self.additional_columns = additional_columns
+
+        if additional_columns is None :
+            self.additional_columns =[]
+        elif type(additional_columns) is str : 
+            self.additional_columns = additional_columns.split(",")
+        elif type(additional_columns) is list :
+            self.additional_columns = additional_columns
+        elif type(additional_columns) is unicode :
+            self.additional_columns = any2utf8(additional_columns).split(",")
+        else :
+            raise TypeError("Wrong type for 'additional_columns")
 
         # load the first few lines, to guess the CSV dialect
         head = ''.join(itertools.islice(open(self.fname, "r"), 5))
@@ -101,15 +111,15 @@ class CSVCorpus(Corpus):
 
             # check if required columns exist
             if any2utf8(self.timestamp_column) not in self.headers: 
-                raise ValueError("column '%s' not present in CSV"%self.timestamp_column)
+                raise ValueError("Time column '%s' not present in CSV"%self.timestamp_column)
             if any2utf8(self.text_column) not in self.headers:
-                raise ValueError("column '%s' not present in CSV"%self.text_column)
+                raise ValueError("Text column '%s' not present in CSV"%self.text_column)
             if any2utf8(self.source_column) not in self.headers:
-                raise ValueError("column '%s' not present in CSV"%self.source_column)
+                raise ValueError("Author column '%s' not present in CSV"%self.source_column)
 
             for column_name in self.additional_columns : 
                 if any2utf8(column_name) not in self.headers:
-                    raise ValueError("column '%s' not present in CSV"%column_name)
+                    raise ValueError("Column '%s' not present in CSV"%column_name)
 
             # check time format (will raise ValueError)
             first_line = self.reader.next()
@@ -132,7 +142,7 @@ class CSVCorpus(Corpus):
             result["source_column"] = row[any2utf8(self.source_column)]
 
             for column_name in self.additional_columns :
-                result[any2utf8(column_name)] = row[any2utf8(self.source_column)]
+                result[any2utf8(column_name)] = any2utf8(row[any2utf8(column_name)])
 
             self.length =  self.length + 1  # store the total number of CSV rows
 
