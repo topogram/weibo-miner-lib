@@ -17,11 +17,9 @@ class BasicTopogram(Topogram):
         Extract citations from a single row of raw data.
         """
         # logger.info("new row")
-
-        # print row
-        txt = row[0]
-        timestamp = row[1]
-        source = row[2]
+        txt = row["text_column"]
+        timestamp = row["time_column"]
+        source = row["source_column"]
 
         clean = self.nlp.filter_out_regexps(txt)
 
@@ -37,11 +35,6 @@ class BasicTopogram(Topogram):
             for w2 in keywords : 
                 if w1!=w2 :
                     self.add_words_edge(w1, w2)
-
-        # if self.additional_citations_column != None : 
-        #     if row[self.additional_citations_column] != None:
-        #         citations.append( (row[self.additional_citations_column], row[self.source_column]) )
-        #         if row[self.additional_citations_column] not in cited : cited.append(row[self.additional_citations_column])
 
         # words to citations
         for w in keywords:

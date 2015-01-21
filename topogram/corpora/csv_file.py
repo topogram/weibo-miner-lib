@@ -31,7 +31,7 @@ class CSVCorpus(Corpus):
  
     """
 
-    def __init__(self, fname, timestamp_column="created_at", time_pattern="%Y-%m-%dT%H:%M:%S", text_column="text", source_column="user_id", raw_columns = []):
+    def __init__(self, fname, timestamp_column="created_at", time_pattern="%Y-%m-%dT%H:%M:%S", text_column="text", source_column="user_id", additional_columns = []):
         """
         Initialize the corpus from a file.
         """
@@ -44,7 +44,7 @@ class CSVCorpus(Corpus):
         self.text_column = text_column
         self.source_column = source_column
         self.length = 0
-
+        self.additional_columns = additional_columns
 
         # load the first few lines, to guess the CSV dialect
         head = ''.join(itertools.islice(open(self.fname, "r"), 5))
@@ -68,6 +68,7 @@ class CSVCorpus(Corpus):
 
         # store headers
         self.headers = self.reader.fieldnames
+
 
     def raw_sample(self, length):
         """ 
@@ -106,6 +107,10 @@ class CSVCorpus(Corpus):
             if any2utf8(self.source_column) not in self.headers:
                 raise ValueError("column '%s' not present in CSV"%self.source_column)
 
+            for column_name in self.additional_columns : 
+                if any2utf8(column_name) not in self.headers:
+                    raise ValueError("column '%s' not present in CSV"%column_name)
+
             # check time format (will raise ValueError)
             first_line = self.reader.next()
             timestamp = first_line[any2utf8(self.timestamp_column)]
@@ -120,10 +125,19 @@ class CSVCorpus(Corpus):
         Iterate over the corpus, returning a tuple with text as a 'str' and timestamp as a 'datetime' object.
         """ 
         for index, row in enumerate(self.reader, start=1):
-            text = any2utf8(row[any2utf8(self.text_column)])
-            timestamp = datetime.strptime(row[any2utf8(self.timestamp_column)], self.time_pattern)
+            result = {}
+
+            result["text_column"] = any2utf8(row[any2utf8(self.text_column)])
+            result["time_column"] = datetime.strptime(row[any2utf8(self.timestamp_column)], self.time_pattern)
+            result["source_column"] = row[any2utf8(self.source_column)]
+
+            for column_name in self.additional_columns :
+                result[any2utf8(column_name)] = row[any2utf8(self.source_column)]
+
             self.length =  self.length + 1  # store the total number of CSV rows
-            yield(text, timestamp, row[any2utf8(self.source_column)])
+
+            yield(result)
+
 
 
     def __len__(self):
