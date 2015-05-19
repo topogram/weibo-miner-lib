@@ -4,6 +4,8 @@
 import re
 import networkx as nx
 from networkx.readwrite import json_graph
+from networkx.algorithms.approximation.dominating_set import min_weighted_dominating_set
+
 from datetime import datetime
 from nlp import NLP
 from corpus import Corpus
@@ -99,10 +101,13 @@ class Topogram:
         """ Cancel specific timeframe to process"""
         self.corpus.reset_timeframe()
 
-    def get_top_nodes(self, graph, min):
+    def get_nodes(self, g):
+        return g.nodes()
+
+    def get_nodes_degree(self, graph):
         """ get most important nodes in a graph"""
         degrees =  graph.degree()
-        return [ { "node" : word , "degree":  degrees[word]} for word in sorted(degrees, key=lambda x: degrees[x], reverse=True) if degrees[word] > min]
+        return [ { "node" : word , "degree":  degrees[word]} for word in sorted(degrees, key=lambda x: degrees[x], reverse=True)]
 
     def get_top_words(self, min):
         """ Get most important words (based on network degree) """
@@ -112,15 +117,64 @@ class Topogram:
         """ Get most important words (based on network degree) """
         return self.get_top_nodes(self.citations, min)
 
-    def get_node_network(self, graph, min):
-        """ Get most important words (based on network degree) """
-        nodes = self.get_top_nodes(graph, min)
-        for node in nodes :
-            nodes 
+    def get_words(self):
+        return self.words
 
-    def get_words_network(self, min):
+    def get_average_degree_connectivity(self, g):
+        return nx.average_degree_connectivity(g)
+
+    def calculate_eigenvector_centrality(self, graph):  
+        ''' Calculate eigenvector centrality of a node, sets value on node as attribute; returns graph, and dict of the eigenvector centrality values.
+        Also has commented out code to sort by ec value
+        '''
+        g = graph
+        ec = nx.eigenvector_centrality(g)
+        nx.set_node_attributes(g,'eigen_cent',ec)
+        #ec_sorted = sorted(ec.items(), key=itemgetter(1), reverse=True)
+        return ec
+
+    def get_average_graph(self, g):
+        """Filter the graph with only nodes above the average connectivity"""
+        avg_deg = nx.eigenvector_centrality(g)
+        print "average degree connectivity %s"%avg_deg
+        self.limit_node_network(g, avg_deg)
+
+    def limit_node_network(self, g,min):
+        """ cut node network by a limit factor"""
+        n = g.nodes()
+        print "%s nodes total"%len(n)
+
+        # remove edge where weight is inferior to min 
+        print "%s edges before filtering"%len(g.edges())
+        for u,v,d in g.edges(data=True) :
+            if d ['weight'] < min : g.remove_edge(u,v)
+
+        print "%s edges after filtering"%len(g.edges())
+
+        deg = g.degree() # calculate degrees
+        for n in deg:
+            if deg[n] < 1 : g.remove_node(n) # filter out degree
+        
+
+        print "%s nodes after filtering"%len(g.nodes())
+
+        return g
+
+    def get_node_network(self, graph, min):
+        """ Get most important nodes in the networks
+                Edges weight should be superior to the 'min' argument.
+                Nodes should at least have a degree of 1."""
+
+        g=graph.copy() # clone graph
+        return self.limit_node_network(g,min)
+
+    def get_words_network(self, min, format="json"):
         """ get a graph of words given a maximum number of nodes """
-        self.get_node_network(self.words, min)
+        words_network =  self.get_node_network(self.words, min)
+        if format=="json":
+            return  json_graph.node_link_data(words_network)
+        else:
+            return words_network
 
     def get_words_density(self):
         """ Return the density of the words graph. (The density is 0 for a graph without edges and 1 for a complete graph.) """
@@ -138,6 +192,15 @@ class Topogram:
         """ export to d3 with clean formatting """
         d =  json_graph.node_link_data(self.words)
         return d
+
+    def export_words_to_json(self):
+        """ export to d3 with clean formatting """
+        d =  json_graph.node_link_data(self.words)
+        return d
+
+    def load_words_from_json(self, json_data):
+        """ load from json"""
+        self.words = json_graph.node_link_graph(json_data)
 
     def export_citations_to_d3_js(self):
         """ export to d3 with clean formatting """
