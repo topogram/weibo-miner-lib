@@ -16,7 +16,7 @@ class NLPPreProcess(Topogram):
         logger.info("Start processing the corpus")
         for i, row in enumerate(self.corpus):
             # if i ==10 : break
-            print row
+            # print row
 
             # logger.info("new row")
             txt = row["text_column"]
