@@ -15,7 +15,7 @@ class NLPPreProcess(Topogram):
         """ process the whole corpus"""
         logger.info("Start processing the corpus")
         for i, row in enumerate(self.corpus):
-            if i ==10 : break
+            # if i ==10 : break
             print row
 
             # logger.info("new row")
