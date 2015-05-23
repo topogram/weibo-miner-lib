@@ -27,7 +27,9 @@ class ChineseNLP(NLP):
         # parse chinese stopwords
         stopwords_file=os.path.join(here,os.path.join("stopwords","zh.txt"))
         self.stopwords+=[i.strip() for i in open(stopwords_file,"r")]
-        
+
+        print len(self.stopwords)
+
         # parse generic stopwords
         stopwords_file=os.path.join(here,os.path.join("stopwords","all.txt"))
         self.stopwords+=[i.strip() for i in open(stopwords_file,"r")]

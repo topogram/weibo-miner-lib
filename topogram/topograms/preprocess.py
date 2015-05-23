@@ -15,14 +15,12 @@ class NLPPreProcess(Topogram):
         """ process the whole corpus"""
         logger.info("Start processing the corpus")
         for i, row in enumerate(self.corpus):
-            # if i ==10 : break
-            # print row
 
             # logger.info("new row")
             txt = row["text_column"]
 
             clean = self.nlp.filter_out_regexps(txt)
             keywords = self.nlp.get_words(clean)
-            row["text_column"] = keywords
+            row["keywords"] = keywords
             yield row
 

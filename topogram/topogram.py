@@ -3,7 +3,7 @@
 
 import re
 import networkx as nx
-from networkx.readwrite import json_graph
+from networkx.readwrite import json_graph, gpickle
 from networkx.algorithms.approximation.dominating_set import min_weighted_dominating_set
 
 from datetime import datetime
@@ -139,42 +139,47 @@ class Topogram:
         print "average degree connectivity %s"%avg_deg
         self.limit_node_network(g, avg_deg)
 
-    def limit_node_network(self, g,min):
-        """ cut node network by a limit factor"""
-        n = g.nodes()
-        print "%s nodes total"%len(n)
 
-        # remove edge where weight is inferior to min 
-        print "%s edges before filtering"%len(g.edges())
-        for u,v,d in g.edges(data=True) :
-            if d ['weight'] < min : g.remove_edge(u,v)
-
-        print "%s edges after filtering"%len(g.edges())
-
-        deg = g.degree() # calculate degrees
-        for n in deg:
-            if deg[n] < 1 : g.remove_node(n) # filter out degree
-        
-
-        print "%s nodes after filtering"%len(g.nodes())
-
-        return g
-
-    def get_node_network(self, graph, min):
+    def get_node_network(self, g, nodes_count=0, min_edge_weight=0):
         """ Get most important nodes in the networks
-                Edges weight should be superior to the 'min' argument.
-                Nodes should at least have a degree of 1."""
+              
+              g : a networkx Graph object
+              nodes_count : maximum number of nodes in the final graph
+              min_edge_weight : minimum weight for edges to be kept
 
-        g=graph.copy() # clone graph
-        return self.limit_node_network(g,min)
+              return :a networkx Graph object, subgraph of g
+        """
 
-    def get_words_network(self, min, format="json"):
-        """ get a graph of words given a maximum number of nodes """
-        words_network =  self.get_node_network(self.words, min)
-        if format=="json":
-            return  json_graph.node_link_data(words_network)
-        else:
-            return words_network
+        print "%s nodes total"%len(g.nodes())
+        nodes_ok= []
+
+        # filter nodes
+        if nodes_count != 0 :
+            print "keep only  %s words"%nodes_count
+            deg = g.degree() # calculate degrees
+            nodes_sorted =  sorted(deg, key=lambda k:  deg[k] , reverse=True)
+            nodes_ok = nodes_sorted[0:nodes_count]
+
+        g_ok = g.subgraph(nodes_ok)
+        print "%s nodes after filtering"%len(g_ok.nodes())
+
+        # filter edges 
+        if min_edge_weight != 0 :
+            print "keep only the edges with a weight more than  %s"%min_edge_weight
+            for u,v,d in g_ok.edges(data=True) :
+                if d['weight'] < min_edge_weight : g_ok.remove_edge(u,v)
+
+        print "%s edges after filtering"%len(g_ok.edges())
+
+        return g_ok
+
+    def get_words_network(self, nodes_count=0, min_edge_weight=0):
+        """ 
+            Get a graph of words given a maximum number of nodes 
+        
+        """
+        words_network =  self.get_node_network(self.words, nodes_count=nodes_count, min_edge_weight=min_edge_weight)
+        return words_network
 
     def get_words_density(self):
         """ Return the density of the words graph. (The density is 0 for a graph without edges and 1 for a complete graph.) """
@@ -188,9 +193,14 @@ class Topogram:
         """ Method to extract all knowledge from corpus"""
         raise NotImplementedError('Not available for abstract base class. You should instantiate Topogram class with a specific algorithm')
 
+
     def export_words_to_d3_js(self):
         """ export to d3 with clean formatting """
         d =  json_graph.node_link_data(self.words)
+        return d
+
+    def export_to_json(self, g):
+        d =  json_graph.node_link_data(g)
         return d
 
     def export_words_to_json(self):
@@ -206,8 +216,3 @@ class Topogram:
         """ export to d3 with clean formatting """
         d =  json_graph.node_link_data(self.citations)
         return d
-
-    def export_to_json(self, fname):
-        json_data = self.export_to_d3()
-        json.dump(d, open(fname,"w"), sort_keys=True, indent=4)
-
