@@ -39,19 +39,19 @@ class Corpus:
         # self.__dict__ = data
         raise NotImplementedError("load the corpus")
 
-    def load(cls, fname):
-        """
-        Load a previously saved object from file (also see `save`).
-        """
+    # def load(cls, fname):
+    #     """
+    #     Load a previously saved object from file (also see `save`).
+    #     """
 
-        with open(fname) as f:
-            obj = pickle.load(f)
-            self.__dict__ = obj
-            return obj
+    #     with open(fname) as f:
+    #         obj = pickle.load(f)
+    #         self.__dict__ = obj
+    #         return obj
 
-    def save(self, fname, protocol=-1):
-        """
-        Save the object to file (also see `load`).
-        """
-        with open(fname, 'wb') as fout: # 'b' for binary, needed on Windows
-            pickle.dump(__self__.dict, fout, protocol=protocol)
+    # def save(self, fname, protocol=-1):
+    #     """
+    #     Save the object to file (also see `load`).
+    #     """
+    #     with open(fname, 'wb') as fout: # 'b' for binary, needed on Windows
+    #         pickle.dump(__self__.dict, fout, protocol=protocol)

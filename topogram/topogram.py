@@ -93,14 +93,6 @@ class Topogram:
         self.start = None
         self.end = None
 
-    def set_timeframe(self, start, end):
-        """ specific timeframe to process """
-        self.corpus.set_timeframe(start, end)
-
-    def reset_timeframe(self):
-        """ Cancel specific timeframe to process"""
-        self.corpus.reset_timeframe()
-
     def get_nodes(self, g):
         return g.nodes()
 
@@ -123,21 +115,21 @@ class Topogram:
     def get_average_degree_connectivity(self, g):
         return nx.average_degree_connectivity(g)
 
-    def calculate_eigenvector_centrality(self, graph):  
-        ''' Calculate eigenvector centrality of a node, sets value on node as attribute; returns graph, and dict of the eigenvector centrality values.
-        Also has commented out code to sort by ec value
-        '''
-        g = graph
-        ec = nx.eigenvector_centrality(g)
-        nx.set_node_attributes(g,'eigen_cent',ec)
-        #ec_sorted = sorted(ec.items(), key=itemgetter(1), reverse=True)
-        return ec
+    # def calculate_eigenvector_centrality(self, graph):  
+    #     ''' Calculate eigenvector centrality of a node, sets value on node as attribute; returns graph, and dict of the eigenvector centrality values.
+    #     Also has commented out code to sort by ec value
+    #     '''
+    #     g = graph
+    #     ec = nx.eigenvector_centrality(g)
+    #     nx.set_node_attributes(g,'eigen_cent',ec)
+    #     #ec_sorted = sorted(ec.items(), key=itemgetter(1), reverse=True)
+    #     return ec
 
-    def get_average_graph(self, g):
-        """Filter the graph with only nodes above the average connectivity"""
-        avg_deg = nx.eigenvector_centrality(g)
-        print "average degree connectivity %s"%avg_deg
-        self.limit_node_network(g, avg_deg)
+    # def get_average_graph(self, g):
+    #     """Filter the graph with only nodes above the average connectivity"""
+    #     avg_deg = nx.eigenvector_centrality(g)
+    #     print "average degree connectivity %s"%avg_deg
+    #     self.limit_node_network(g, avg_deg)
 
 
     def get_node_network(self, g, nodes_count=0, min_edge_weight=0):

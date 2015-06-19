@@ -30,6 +30,12 @@ class TestNLP(unittest.TestCase):
         filtered  = self.nlp.filter_out_stopwords(["kikoo", stopword, "haha"])
         self.assertTrue(stopword not in filtered)
 
+    def test_extract_keywords_raise_error(self):
+        self.assertRaises(NotImplementedError, lambda : len(self.nlp.extract_keywords("")))
+
+    def test_extract_dictionary_raise_error(self):
+        self.assertRaises(NotImplementedError, lambda : len(self.nlp.extract_dictionary("")))
+
 class TestChineseNLP(unittest.TestCase):
 
     def setUp(self):

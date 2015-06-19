@@ -44,6 +44,11 @@ class TestTopogram(unittest.TestCase):
         self.assertRaises(TypeError, lambda : Topogram(self.corpus, 1))
         self.assertRaises(TypeError, lambda : Topogram(self.corpus, self.nlp, {}))
 
+    def test_add_multiple_regexps(self):
+        hashtagPattern=r"#([^#\s]+)#"
+        self.topogram.add_citation_regexp([hashtagPattern, hashtagPattern])
+        self.assertEquals(len(self.topogram.citation_regexps), 2)
+
     def test_extract_citations(self):
         # add a citation pattern
         hashtagPattern=r"#([^#\s]+)#"
@@ -74,12 +79,55 @@ class TestTopogram(unittest.TestCase):
         self.assertTrue(self.topogram.words["a"]["b"]["weight"] == 2)
         self.assertTrue(self.topogram.citations["a"]["b"]["weight"] == 2)
 
+    def test_get_nodes_degree(self):
+        self.add_nx_data() 
+        deg = self.topogram.get_nodes_degree(self.topogram.words)
+        print len(deg)
+        self.assertEquals(len(deg), 3)
+
+    def test_get_words(self):
+        self.add_nx_data() 
+        w = self.topogram.get_words()
+        self.assertEquals(w, self.topogram.words)
+
+    def test_get_average_degree_connectivity(self):
+        self.add_nx_data() 
+        d = self.topogram.get_average_degree_connectivity(self.topogram.words)
+        print d, type(d)
+        self.assertTrue(type(d) is dict)
+        self.assertTrue(type(d[1]) is float)
+
     def test_export_to_d3_js(self):
         self.add_nx_data()
         d3_json = self.topogram.export_words_to_d3_js()
         print d3_json
         self.assertTrue( type(d3_json["nodes"]) is list)
         self.assertTrue( type(d3_json["links"]) is list)
+
+    def test_export_words_to_json(self):
+        self.add_nx_data()
+        words_json = self.topogram.export_words_to_json()
+        print words_json
+        self.assertTrue( type(words_json["nodes"]) is list)
+        self.assertTrue( type(words_json["links"]) is list)
+
+    def test_load_words_from_json(self):
+        self.add_nx_data()
+        words_json = self.topogram.export_words_to_d3_js()
+
+        topogram = Topogram(corpus, nlp)
+        topogram.load_words_from_json(words_json)
+        self.assertEquals(topogram.words.nodes(), self.topogram.words.nodes())
+        self.assertEquals(topogram.words.edges(), self.topogram.words.edges())
+
+    def test_get_nodes(self):
+        self.add_nx_data()
+        self.assertEquals(self.topogram.get_nodes(self.topogram.words), self.topogram.words.nodes())
+
+    def test_get_node_network(self):
+        self.add_nx_data()
+        g = self.topogram.get_node_network(self.topogram.words)
+        self.assertTrue(g.nodes() < self.topogram.words.nodes())
 
 class TestBasicTopogram(unittest.TestCase):
 
