@@ -3,7 +3,7 @@
 
 from  itertools import permutations
 
-from topogram.utils import any2utf8
+from .topogram.utils import any2utf8
 from topogram.corpora.csv_file import CSVCorpus 
 from topogram.languages.zh import ChineseNLP
 from topogram.topograms.preprocess import NLPPreProcess

@@ -31,7 +31,8 @@ class Corpus:
 
     def to_JSON(self):
         """ Serialize the whole corpus to JSON"""
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        # return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        raise NotImplementedError("dump the corpus")
 
     def load_from_JSON(self,data):
         """ Load from a serialized JSON"""

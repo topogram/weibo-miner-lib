@@ -5,7 +5,27 @@ import unittest
 import os
 from datetime import datetime
 
+from topogram.corpus import Corpus
 from topogram.corpora.csv_file import CSVCorpus
+
+class TestDefaultCorpus(unittest.TestCase):
+    """ Default methods should raise NotImplementedError"""
+
+    def setUp(self): 
+        self.corpus = Corpus()
+    
+    def test_len_raise_error(self):
+        self.assertRaises(NotImplementedError, lambda : len(self.corpus))
+
+    def test_iter_raise_error(self):
+        self.assertRaises(NotImplementedError, lambda : [i for i in self.corpus])
+        
+    def test_load_JSON_raise_error(self):
+        self.assertRaises(NotImplementedError, lambda : self.corpus.load_from_JSON(""))
+
+    def test_json_dumps(self):
+        self.assertRaises(NotImplementedError, lambda : self.corpus.to_JSON())
+
 
 class TestCSVCorpus(unittest.TestCase):
 

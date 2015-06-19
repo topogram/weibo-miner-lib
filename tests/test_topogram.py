@@ -9,6 +9,7 @@ from topogram.topogram import Topogram
 from topogram.languages.zh import ChineseNLP 
 from topogram.corpora.csv_file import CSVCorpus
 from topogram.topograms.basic import BasicTopogram
+from topogram.topograms.preprocess import NLPPreProcess
 
 # get a csv corpus
 csv_path = os.path.join(os.getcwd(), "tests/sampleweibo.csv")
@@ -115,6 +116,27 @@ class TestBasicTopogram(unittest.TestCase):
         self.topogram.process()
         self.assertTrue(self.topogram.get_words_density() < 1)
         self.assertTrue(self.topogram.get_citations_density() < 1)
+
+class TestPreProcess(unittest.TestCase):
+    def setUp(self):
+
+        # create topogram
+        corpus = CSVCorpus(csv_path, source_column="uid", time_pattern="%Y-%m-%d %H:%M:%S")
+        corpus.validate()
+        # self.topogram = BasicTopogram(corpus, nlp)
+        self.preproc = NLPPreProcess(corpus=corpus, nlp=nlp)
+
+    def test_process(self):
+        rows = []
+        for row in  self.preproc.process() : 
+            print len(row["text_column"] )
+            self.assertTrue(len(row["text_column"]) !=  0)
+            self.assertTrue(type(row["text_column"]) is str)
+
+    def test_preprocess_return_rows(self):
+        rows = [row for row in  self.preproc.process() ]
+        self.assertEquals(len(rows), 120)
+
 
 if __name__ == '__main__':
     unittest.main()
