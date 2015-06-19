@@ -29,6 +29,5 @@ setup(
       "csvvalidator"
       ],
       test_suite='tests'
-      
       )
 

@@ -102,14 +102,14 @@ class TestBasicTopogram(unittest.TestCase):
         self.topogram.process()
         self.assertTrue(self.topogram.citations.order() != 0)
 
-    def test_list_of_top_words(self):
-        self.topogram.process()
-        top_words = self.topogram.get_top_words(150)
-        self.assertTrue(len(top_words) == 2)
-        top_citations = self .topogram.get_top_citations(20)
+    # def test_list_of_top_words(self):
+    #     self.topogram.process()
+    #     top_words = self.topogram.get_top_words(150)
+    #     self.assertTrue(len(top_words) == 2)
+    #     top_citations = self .topogram.get_top_citations(20)
         
-        print top_citations
-        self.assertTrue(len(top_citations) == 1)
+    #     print top_citations
+    #     self.assertTrue(len(top_citations) == 1)
 
     def test_densities(self):
         self.topogram.process()

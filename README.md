@@ -18,3 +18,8 @@ Documentation available at [topogram.readthedocs.org](http://topogram.readthedoc
 Build and pass the tests
 
      python setup.py test 
+
+or (more fancy)
+
+    pip install pytest-sugar
+    py.test tests
