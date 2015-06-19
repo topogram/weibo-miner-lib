@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import csv
-import json
 from  itertools import permutations
 
 from topogram.utils import any2utf8
