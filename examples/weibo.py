@@ -4,49 +4,44 @@
 import os
 import csv
 import json
-from topogram import Topogram
+from  itertools import permutations
 
-print "start weibo"
+from topogram.utils import any2utf8
+from topogram.corpora.csv_file import CSVCorpus 
+from topogram.languages.zh import ChineseNLP
+from topogram.topograms.preprocess import NLPPreProcess
 
-# specific stopwords for weibo
-stopwords=["转发","微博","说 ","一个","【 ","年 ","转 ","请","＂ ","问题","知道","中 ","已经","现在","说","【",'＂',"年","中","今天","应该","真的","月","希望","想","日","这是","太","转","支持", "@", "。", "/", "！","？",".",",","?","、","。","“","”","《","》","！","，","：","；","？",":","；","[","]","；",".", ".","."]
+# import corpus
+csv_corpus = CSVCorpus('sampleweibo.csv',
+        source_column="uid",
+        text_column="text",
+        timestamp_column="created_at",
+        time_pattern="%Y-%m-%d %H:%M:%S",
+        additional_columns=["permission_denied", "deleted_last_seen"])
 
-# # TIMESTAMP
-# weibo.timestamp_column="created_at"    # timestamp column name
-# weibo.text_column="text"
-# weibo.source_column="uid"
-# weibo.additional_citations_column="retweeted_uid"
-
-MentionPattern =r"@([^:：,，\)\(（）|\\\s]+)"
-
-# create topogram object
-weibo= Topogram(languages=["zh"], stopwords=stopwords, citation_regexp=MentionPattern)
-
-# add citations to be ignored
-ignore=["ukn", "ukn：","ukn："]
-for ign in ignore :
-    weibo.add_citation_exception(ign)
-
-# add regexp to ignore
-urlPattern=r"\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^\p{P}\s]|/)))"
-hashtagPattern=r"#([^#\s]+)#"
-weibo.set_stop_regexp(urlPattern)
-weibo.set_stop_regexp(hashtagPattern)
-
-# GO !
-weibo.time_pattern="%Y-%m-%d %H:%M:%S" # timestamp pattern
+# validate corpus formatting
+try :
+    csv_corpus.validate()
+except ValueError, e:
+    print e.message, 422
 
 
-with open('sampleweibo.csv', 'rb') as csvfile:
-     reader = csv.DictReader(csvfile)
-     for row in reader:
-        weibo.process(row)
+# init NLP
+nlp = ChineseNLP()
 
-weibo.create_networks()
-weibo.create_timeframes()
+# process  data
+topogram = NLPPreProcess(corpus=csv_corpus, nlp=nlp)
 
-# save as json
-timeframes_file='data.json'
-with open(timeframes_file, 'w') as outfile:
-    outfile.write(weibo.timeframes_to_JSON())
-    print "json file saved to %s"%(timeframes_file)
+for i, row in enumerate(topogram.process()):
+    keywords = set(row["keywords"]) # set() to avoid repetitions
+
+    # compute word graph 
+    for word in list(permutations(keywords, 2)) : # pair the words
+        topogram.add_words_edge(word[0], word[1])
+
+
+# get processed graph
+topogram.get_words_network(nodes_count=1000, min_edge_weight=3)
+
+# output as  json
+print topogram.export_words_to_json()
