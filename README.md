@@ -40,29 +40,41 @@ except ValueError, e:
 
 ```
 
-#### 2. Extractor : process your information
+#### 2. Processor : extract your information
 
 ```python
 
-from topogram.topograms.basic import BasicTopogram
+from topogram import Topogram
+from topogram.processors.nlp import NLP
+from topogram.processors.regexp import Regexp
 
-# init Chinese NLP
-nlp = ChineseNLP()
+# init processors
+chinese_nlp = NLP("zh")
+url = Regexp(r"\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^\p{P}\s]|/)))")
 
-# init with NLP analysis
-topogram = BasicTopogram(corpus=csv_corpus, processors=[nlp])
-
-# process  data
-topogram.process() 
+# init 
+topogram = Topogram(corpus=csv_corpus, processors=[("zh", chinese_nlp), ("urls", url)])
 ```
 
 #### 3. Visualizer : get your viz data
 
 ```python
 
-# words network 
-words = topogram.words_to_d3js(max_nodes=200)
+from topogram.visualizers.network import Network
 
+# create viz model
+words_network = Network( directed=False )
+
+for row in topogram.process():
+    words_network.add_edges_from_nodes_list(row["zh"])
+
+# get processed graph as d3js json
+print words_network.get(nodes_count=1000, min_edge_weight=3, json=True)
+```
+
+#### More options
+
+```python
 # timeseries
 timeseries = topogram.get_timeseries(time_scale="minute")
 

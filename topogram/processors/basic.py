@@ -6,7 +6,6 @@ from topogram.topogram import Topogram
 import logging 
 logger = logging.getLogger('topogram.topograms.basic')
 
-
 class BasicTopogram(Topogram):
     """
     Simple topogram to extract citations networks and co-occurence of words in documents.

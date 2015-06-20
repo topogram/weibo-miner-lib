@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This module contains various general utility functions.
+This module contains various utility functions.
 """
 
 def any2utf8(text, errors='strict', encoding='utf8'):

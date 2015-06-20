@@ -1,15 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 from  itertools import permutations
 
-from .topogram.utils import any2utf8
+from topogram.utils import any2utf8
 from topogram.corpora.csv_file import CSVCorpus 
-from topogram.languages.zh import ChineseNLP
-from topogram.topograms.preprocess import NLPPreProcess
+from topogram.processors.nlp import NLP
+from topogram.processors.regexp import Regexp
+
+from topogram import Topogram
+from topogram.visualizers.network import Network
+
+import logging
+import sys
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 # import corpus
-csv_corpus = CSVCorpus('sampleweibo.csv',
+csv_corpus = CSVCorpus(os.path.join("examples", 'sampleweibo.csv'),
         source_column="uid",
         text_column="text",
         timestamp_column="created_at",
@@ -22,23 +30,19 @@ try :
 except ValueError, e:
     print e.message, 422
 
-
-# init NLP
-nlp = ChineseNLP()
+# init processors
+chinese_nlp = NLP("zh")
+url = Regexp(r"\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^\p{P}\s]|/)))")
 
 # process  data
-topogram = NLPPreProcess(corpus=csv_corpus, nlp=nlp)
+topogram = Topogram(corpus=csv_corpus, processors=[("zh", chinese_nlp), ("urls", url)])
 
-for i, row in enumerate(topogram.process()):
-    keywords = set(row["keywords"]) # set() to avoid repetitions
+# create viz model
+words_network = Network( directed=False )
 
-    # compute word graph 
-    for word in list(permutations(keywords, 2)) : # pair the words
-        topogram.add_words_edge(word[0], word[1])
+for row in topogram.process():
+    words_network.add_edges_from_nodes_list(row["zh"])
 
+# get processed graph as d3js json
+print words_network.get(nodes_count=1000, min_edge_weight=3, json=True)
 
-# get processed graph
-topogram.get_words_network(nodes_count=1000, min_edge_weight=3)
-
-# output as  json
-print topogram.export_words_to_json()
