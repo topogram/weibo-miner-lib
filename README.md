@@ -20,49 +20,58 @@ Topogram relies on three core components : corpus, extractors  and visualizers.
 
 #### 1. Corpus : describe your dataset
 
-    from topogram.corpora.csv_file import CSVCorpus 
-    
-    # import corpus
-    csv_corpus = CSVCorpus('data.csv',
-        source_column="user_id",
-        text_column="text",
-        timestamp_column="created_at",
-        time_pattern="%Y-%m-%d %H:%M:%S",
-        additional_columns=["permission_denied", "deleted_last_seen"])
+```python
 
-    # validate corpus formatting
-    try :
-        csv_corpus.validate()
-    except ValueError, e:
-        print e.message, 422
+from topogram.corpora.csv_file import CSVCorpus 
+
+# import corpus
+csv_corpus = CSVCorpus('data.csv',
+    source_column="user_id",
+    text_column="text",
+    timestamp_column="created_at",
+    time_pattern="%Y-%m-%d %H:%M:%S",
+    additional_columns=["permission_denied", "deleted_last_seen"])
+
+# validate corpus formatting
+try :
+    csv_corpus.validate()
+except ValueError, e:
+    print e.message, 422
+
+```
 
 #### 2. Extractor : process your information
 
-    from topogram.topograms.basic import BasicTopogram
+```python
 
-    # init Chinese NLP
-    nlp = ChineseNLP()
+from topogram.topograms.basic import BasicTopogram
 
-    # init with NLP analysis
-    topogram = BasicTopogram(corpus=csv_corpus, processors=[nlp])
+# init Chinese NLP
+nlp = ChineseNLP()
 
-    # process  data
-    topogram.process() 
+# init with NLP analysis
+topogram = BasicTopogram(corpus=csv_corpus, processors=[nlp])
+
+# process  data
+topogram.process() 
+```
 
 #### 3. Visualizer : get your viz data
 
-    # words network 
-    words = topogram.words_to_d3js(max_nodes=200)
+```python
 
-    # timeseries
-    timeseries = topogram.get_timeseries(time_scale="minute")
+# words network 
+words = topogram.words_to_d3js(max_nodes=200)
 
-    # select only the time frame between 2001 Jan 1 and Dec 31
-    topogram.setTimeFrame(start=datetime(2000, 1, 1) , end=datetime(2001, 31, 12))
+# timeseries
+timeseries = topogram.get_timeseries(time_scale="minute")
 
-    # export map coordinates
-    map = topogram.get_map(networks=["words"], projection="orthographic")
+# select only the time frame between 2001 Jan 1 and Dec 31
+topogram.setTimeFrame(start=datetime(2000, 1, 1) , end=datetime(2001, 31, 12))
 
+# export map coordinates
+map = topogram.get_map(networks=["words"], projection="orthographic")
+```
 
 ## Install
 
