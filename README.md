@@ -15,13 +15,16 @@ Documentation available at [topogram.readthedocs.org](http://topogram.readthedoc
 * Time-based anlaysis (hour, day, month, year... )
 * Community detection (Louvain algorithm)
 
-## Tests
+### Tests
 
-Build and pass the tests
+    make test
 
-     nosetests
+### Docs
 
-or (more fancy)
+Build documentation (with sphinx)
 
-    pip install pytest-sugar
-    py.test tests
+    make documentation
+
+and publish
+
+    make upload-docs

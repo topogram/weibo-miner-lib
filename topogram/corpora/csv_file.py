@@ -126,9 +126,9 @@ class CSVCorpus(Corpus):
             timestamp = first_line[any2utf8(self.timestamp_column)]
             datetime.strptime(timestamp, any2utf8(self.time_pattern))
 
-    def reset_timeframe(self):
-        self.start = None
-        self.stop = None
+    # def reset_timeframe(self):
+    #     self.start = None
+    #     self.stop = None
 
     def __iter__(self):
         """

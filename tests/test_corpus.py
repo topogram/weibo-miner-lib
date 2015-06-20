@@ -91,7 +91,14 @@ class TestCSVCorpus(unittest.TestCase):
             for col in corpus.additional_columns : 
                 self.assertEquals(type(row[col]), str)
 
+    def test_missing_headers(self):
+        csv_path = os.path.join(os.getcwd(), "tests/missingheaders.csv") 
+        self.assertRaises(KeyError, lambda : CSVCorpus(csv_path) )
 
+    def test_default_values(self):
+        csv_path = os.path.join(os.getcwd(), "tests/sampleweibo.csv")
+        corpus = CSVCorpus(csv_path, source_column="uid", time_pattern="%Y-%m-%d %H:%M:%S", additional_columns=None)
+        self.assertEquals(corpus.additional_columns, [])
 
 if __name__ == '__main__':
     unittest.main()
