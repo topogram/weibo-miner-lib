@@ -33,3 +33,9 @@ Python
 ------
 
 To use Topogram you need Python 2.7, 3.2 or later.
+
+Networkx
+------
+
+Graph manipulations in Topogram relies on the `Networkx <http://networkx.readthedocs.org>` lib (version 1.9.1)
+

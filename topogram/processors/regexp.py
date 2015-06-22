@@ -28,7 +28,8 @@ class Regexp(Processor):
         """ compile a regexp only once to gain time during processing """
         return re.compile(regexp, re.UNICODE)
 
-    
+    def filter_out(self, content):
+        pass
 
     def __call__(self, content):
         """ 

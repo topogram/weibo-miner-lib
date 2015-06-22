@@ -22,7 +22,7 @@ Topogram relies on three core components : corpus, extractors  and visualizers.
 
 ```python
 
-from topogram.corpora.csv_file import CSVCorpus 
+from topogram.corpus.csv_file import CSVCorpus 
 
 # import corpus
 csv_corpus = CSVCorpus('data.csv',
@@ -60,7 +60,7 @@ topogram = Topogram(corpus=csv_corpus, processors=[("zh", chinese_nlp), ("urls",
 
 ```python
 
-from topogram.visualizers.network import Network
+from topogram.vizparsers.network import Network
 
 # create viz model
 words_network = Network( directed=False )

@@ -6,17 +6,17 @@ import json
 import  unittest
 from datetime import datetime
 from topogram.topogram import Topogram
-from topogram.languages.zh import ChineseNLP 
+from topogram.processors.nlp import NLP 
 from topogram.corpora.csv_file import CSVCorpus
-from topogram.topograms.basic import BasicTopogram
-from topogram.topograms.preprocess import NLPPreProcess
+# from topogram.topograms.basic import BasicTopogram
+# from topogram.topograms.preprocess import NLPPreProcess
 
 # get a csv corpus
 csv_path = os.path.join(os.getcwd(), "tests/sampleweibo.csv")
 corpus = CSVCorpus(csv_path, source_column="uid", time_pattern="%Y-%m-%d %H:%M:%S")
 
 # get Chinese NLP
-nlp = ChineseNLP()
+nlp = NLP("zh")
 nlp.add_stopword("ukn")
 
 class TestTopogram(unittest.TestCase):
@@ -24,7 +24,7 @@ class TestTopogram(unittest.TestCase):
     def setUp(self):
 
         # create topogram
-        self.topogram = Topogram(corpus, nlp)
+        self.topogram = Topogram(corpus=corpus, processors=[nlp])
         self.nlp = nlp
         self.corpus = corpus
 
