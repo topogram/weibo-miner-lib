@@ -11,79 +11,12 @@ Topogram is a data mining library to produce time-based networks and maps from t
 
 With tools for validation and parsing, Topogram provides a pipeline to create visualizations of relationships between multiple entities like people, words, time and places. Based on [networkx](http://netwokx.readthedocs.org), [NLTK](http://www.nltk.org) and [d3js](http://d3js.org), it provides a complete toolkit to create advanced social network analysis from raw datasets. 
 
-Read the complete documentation at [topogram.readthedocs.org](http://topogram.readthedocs.org)
 
 
 ## Usage
 
-Topogram relies on three core components : corpus, extractors  and visualizers.
+Read the documentation at [topogram.readthedocs.org](http://topogram.readthedocs.org)
 
-#### 1. Corpus : describe your dataset
-
-```python
-
-from topogram.corpus.csv_file import CSVCorpus 
-
-# import corpus
-csv_corpus = CSVCorpus('data.csv',
-    source_column="user_id",
-    text_column="text",
-    timestamp_column="created_at",
-    time_pattern="%Y-%m-%d %H:%M:%S",
-    additional_columns=["permission_denied", "deleted_last_seen"])
-
-# validate corpus formatting
-try :
-    csv_corpus.validate()
-except ValueError, e:
-    print e.message, 422
-
-```
-
-#### 2. Processor : extract your information
-
-```python
-
-from topogram import Topogram
-from topogram.processors.nlp import NLP
-from topogram.processors.regexp import Regexp
-
-# init processors
-chinese_nlp = NLP("zh")
-url = Regexp(r"\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^\p{P}\s]|/)))")
-
-# init 
-topogram = Topogram(corpus=csv_corpus, processors=[("zh", chinese_nlp), ("urls", url)])
-```
-
-#### 3. Visualizer : get your viz data
-
-```python
-
-from topogram.vizparsers.network import Network
-
-# create viz model
-words_network = Network( directed=False )
-
-for row in topogram.process():
-    words_network.add_edges_from_nodes_list(row["zh"])
-
-# get processed graph as d3js json
-print words_network.get(nodes_count=1000, min_edge_weight=3, json=True)
-```
-
-#### More options
-
-```python
-# timeseries
-timeseries = topogram.get_timeseries(time_scale="minute")
-
-# select only the time frame between 2001 Jan 1 and Dec 31
-topogram.setTimeFrame(start=datetime(2000, 1, 1) , end=datetime(2001, 31, 12))
-
-# export map coordinates
-map = topogram.get_map(networks=["words"], projection="orthographic")
-```
 
 ## Install
 
