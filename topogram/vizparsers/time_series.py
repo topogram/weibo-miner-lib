@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from topogram.vizparsers import Visualizer
+from topogram.vizparser import Visualizer
 from topogram.processors.time_rounder import TimeRounder
 
 from datetime import  datetime 

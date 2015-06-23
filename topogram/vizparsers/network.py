@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from topogram.vizparsers import Visualizer
+from topogram.vizparser import Visualizer
 
 import networkx as nx
 from networkx.readwrite import json_graph, gpickle
