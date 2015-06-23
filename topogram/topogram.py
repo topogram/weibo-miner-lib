@@ -22,9 +22,9 @@ class Topogram:
     This class should be instantiated to use a specific processing algorithms.
     """
 
-    def add_citation_to_ignore(self, citation):
-        """ Add a string to the list of citations to be ignored during processing. For instance, if you want to ignore a user (@justinbieber) while processing your tweets."""
-        self.ignored_citations.append(citation)
+    # def add_citation_to_ignore(self, citation):
+    #     """ Add a string to the list of citations to be ignored during processing. For instance, if you want to ignore a user (@justinbieber) while processing your tweets."""
+    #     self.ignored_citations.append(citation)
 
     def __init__(self, corpus=Corpus, processors=[]):
         """
@@ -39,27 +39,23 @@ class Topogram:
             self.corpus = corpus
 
         # validate processors
+        if not isinstance(processors, list):
+                raise TypeError("Topogram arg 2 should be a list of Processor instances)")
+        
         for i, process in enumerate(processors) : 
-            if not isinstance(process[0], str):
-                raise TypeError("Topogram arg 2 should be a tuple (str, Processor instance)")
-            if not isinstance(process[1], Processor):
-                raise TypeError("Topogram arg 2 should be a tuple (str, Processor instance)")
+            if not isinstance(process, Processor):
+                raise TypeError("%s should be a Processor instance"%process)
 
         self.processors = processors
         self.ignored_citations=[]
-
-        # init  timeFrame
-        self.start = None
-        self.end = None
-
 
     def process(self):
         """ Process the whole corpus"""
         logger.info("Start processing the corpus")
 
-        for i, row in enumerate(self.corpus):
-            for j, process in enumerate(self.processors): 
-                 row[ process[0] ] = process[1](row["text_column"])
-            yield row
+        # for i, row in enumerate(self.corpus):
+        #     for j, process in enumerate(self.processors): 
+        #          row[ process ] = process(row["text_column"])
+        #     yield row
 
-        logger.info("Corpus processing done")
+        # logger.info("Corpus processing done")

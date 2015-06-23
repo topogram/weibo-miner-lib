@@ -18,6 +18,7 @@ Welcome to Topogram's documentation!
 
     install
     quickstart
+    tuto_mongo
 
 Indices and tables
 ==================

@@ -39,18 +39,24 @@ class TimeSeries(Visualizer):
 
     def compute_series(self):
         count= Counter([dt.strftime("%s") for dt in self.data])
-        return count
+        time_counts =  [ { "time" : d, "count" : count[d] } for d in count ]
+        return time_counts
 
     def to_JSON(self):
-        counter = self.compute_series()
-        return [ { "time" : d, "count" : counter[d] } for d in counter ]
+        time_counts = self.compute_series()
+        return time_counts
 
+    def __len__(self):
+        return len(self.data)
 
-    def __call__(self, timestamps):
+    def __call__(self, timestamp):
         
-        if type(timestamps) is not list :
-            raise ValueError("Timeseries should be called with a list of datetime objects")
+        if type(timestamp) is list :
+            self.data += timestamp
+        elif type(timestamp) is datetime :
+           self.add_time_point(timestamp)
+        else: 
+            raise ValueError("Timeseries should be called with a datetime object or list of datetime objects")
 
-        self.data = timestamps
 
 

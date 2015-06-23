@@ -47,19 +47,21 @@ class Network(Visualizer):
                 if json==True : returns a d3js formatted json
                 else  a networkx Graph object, subgraph of g
         """
+
         g = self.g
-        print "%s nodes total"%len(g.nodes())
+        logger.info("%s nodes total"%len(g.nodes()))
         nodes_ok= []
 
         # filter nodes
         if nodes_count != 0 :
-            print "keep only  %s words"%nodes_count
+            logger.info("keep only  %s nodes"%nodes_count)
             deg = g.degree() # calculate degrees
             nodes_sorted =  sorted(deg, key=lambda k:  deg[k] , reverse=True)
             nodes_ok = nodes_sorted[0:nodes_count]
-
-        g_ok = g.subgraph(nodes_ok)
-        print "%s nodes after filtering"%len(g_ok.nodes())
+            g_ok = g.subgraph(nodes_ok)
+        else :
+            g_ok = g
+        logger.info("%s nodes after filtering"%len(g_ok.nodes()))
 
         # filter edges 
         if min_edge_weight != 0 :
@@ -67,45 +69,34 @@ class Network(Visualizer):
             for u,v,d in g_ok.edges(data=True) :
                 if d['weight'] < min_edge_weight : g_ok.remove_edge(u,v)
 
-        print "%s edges after filtering"%len(g_ok.edges())
+        logger.info("%s edges after filtering"%len(g_ok.edges()))
 
         if json : 
             return json_graph.node_link_data(g_ok)
         else : 
             return g_ok
 
-    def get_nodes(self, g):
-        return g.nodes()
-
     # METRICS
-
-    def get_nodes_degree(self, graph):
+    def get_nodes_degree(self):
         """ get most important nodes in a graph"""
-        degrees =  graph.degree()
+        degrees =  self.g.degree()
         return [ { "node" : word , "degree":  degrees[word]} for word in sorted(degrees, key=lambda x: degrees[x], reverse=True)]
 
-    def calculate_eigenvector_centrality(self, graph):  
-        ''' Calculate eigenvector centrality of a node, sets value on node as attribute; returns graph, and dict of the eigenvector centrality values.
-        '''
-        g = graph
-        ec = nx.eigenvector_centrality(g)
-        nx.set_node_attributes(g,'eigen_cent',ec)
-        #ec_sorted = sorted(ec.items(), key=itemgetter(1), reverse=True)
-        return ec
+    # def calculate_eigenvector_centrality(self):  
+    #     ''' Calculate eigenvector centrality of a node, sets value on node as attribute; returns graph, and dict of the eigenvector centrality values.
+    #     '''
+    #     g = self.g
+    #     ec = nx.eigenvector_centrality(g)
+    #     nx.set_node_attributes(g,'eigen_cent',ec)
+    #     #ec_sorted = sorted(ec.items(), key=itemgetter(1), reverse=True)
+    #     return ec
 
-    # def get_average_graph(self, g):
-    #     """Filter the graph with only nodes above the average connectivity"""
-    #     avg_deg = nx.eigenvector_centrality(g)
-    #     print "average degree connectivity %s"%avg_deg
-    #     self.limit_node_network(g, avg_deg)
+    # def get_average_degree_connectivity(self):
+    #     return nx.average_degree_connectivity(self.g)
 
-
-    def get_average_degree_connectivity(self):
-        return nx.average_degree_connectivity(self.g)
-
-    def get_density(self):
-        """ Return the density of the words graph. (The density is 0 for a graph without edges and 1 for a complete graph.) """
-        return nx.density(self.g)
+    # def get_density(self):
+    #     """ Return the density of the words graph. (The density is 0 for a graph without edges and 1 for a complete graph.) """
+    #     return nx.density(self.g)
 
     def __call__(self, nodes, edges , data={}):
 

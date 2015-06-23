@@ -13,3 +13,5 @@ class Visualizer:
 
     def __init__(self): 
         logger.info("init Visualizer class")
+        self.test = "test"
+        

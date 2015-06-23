@@ -1,1 +1,1 @@
-import examples.weibo
+import examples.mongo

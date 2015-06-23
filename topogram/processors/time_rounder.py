@@ -24,7 +24,7 @@ class TimeRounder(Processor):
         return datetime(dt.year,dt.month,dt.day,dt.hour)
 
     def round_to_day(self,dt):
-        return datetime(dt.year,dt.month,dt.day )
+        return datetime(dt.year, dt.month, dt.day )
 
     def round_to_month(self,dt):
         return datetime(dt.year, dt.month, 1)
@@ -41,6 +41,6 @@ class TimeRounder(Processor):
         function_name = "round_to_" + self.timescale
         getter = getattr( self, function_name)
 
-        return  [getter( timestamp )]
+        return  getter( timestamp )
 
 

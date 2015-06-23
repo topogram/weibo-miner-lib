@@ -33,5 +33,8 @@ class Graph(Processor):
             self.g.add_edge(nodeA, nodeB, weight= 1)
 
     def __call__(self, nodes):
-        self.add_edges_from_nodes_list(nodes)
+        if type(nodes) is list : 
+            self.add_edges_from_nodes_list(nodes)
+        elif type(nodes) is tuple : 
+            self.add_edge(*nodes)
         return self.g.edges()
