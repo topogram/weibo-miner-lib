@@ -25,8 +25,7 @@ setup(
       install_requires=[
       'networkx',
       "jieba",
-      "python-louvain",
-      "csvvalidator"
+      "chardet"
       ],
       test_suite='tests'
       )

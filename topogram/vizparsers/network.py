@@ -84,8 +84,6 @@ class Network(Visualizer):
         degrees =  graph.degree()
         return [ { "node" : word , "degree":  degrees[word]} for word in sorted(degrees, key=lambda x: degrees[x], reverse=True)]
 
-
-
     def calculate_eigenvector_centrality(self, graph):  
         ''' Calculate eigenvector centrality of a node, sets value on node as attribute; returns graph, and dict of the eigenvector centrality values.
         '''
@@ -108,6 +106,16 @@ class Network(Visualizer):
     def get_density(self):
         """ Return the density of the words graph. (The density is 0 for a graph without edges and 1 for a complete graph.) """
         return nx.density(self.g)
+
+    def __call__(self, nodes, edges , data={}):
+
+        if data != {} and type(data) is not dict :
+            raise ValueError("Data to init graph are required to be dict")
+
+        for e in edges:
+            self.add_edge(*(e))
+        logger.info("Edges added")
+
 
     def to_d3_js(self):
         """ export to d3 with clean formatting """
