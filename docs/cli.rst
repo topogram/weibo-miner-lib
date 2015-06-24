@@ -11,7 +11,7 @@ The basic principle is that you will describe all steps from raw data to clean v
 
 Here is an example to extract a timeseries  from a JSON Array of objects.
 
->>> mongoexport --quiet --db bandstour --collection london_bandsintown  | bin/topo-corpus -r venue -t 'datetime.$date'  -c 'artists' -j json   | bin/topo-proc --processor 'timerounder' -c 'second' | bin/topo-viz -v timeseries -o timeseries.json 
+>>> mongoexport --quiet --db bandstour --collection london_bandsintown  | topo-corpus -r venue -t 'datetime.$date'  -c 'artists' -j json   | topo-proc --processor 'timerounder' -c 'second' | topo-viz -v timeseries -o data/timeseries.json 
 
 Now here is the translation step by step :
 

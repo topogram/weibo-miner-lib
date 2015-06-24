@@ -1,21 +1,23 @@
 # chardet's setup.py
-from setuptools import setup
+from setuptools import setup,find_packages
 
 setup(
       name = "topogram",
-      packages = ["topogram"],
+      packages = find_packages(exclude=['tests']) ,
       version = "0.0.2",
       description = "Network Analysis",
       author = "Clement Renaud",
       author_email = "clement.renaud@gmail.com",
       url = "http://topogram.io",
       download_url = "http://github.com/topogram/topogram",
+      include_package_data=True,
       keywords = ["network", "visualization", "NLP"],
       entry_points={
         'console_scripts': [
-            'topo-viz = bin.topo-viz:main',
-            'topo-proc = bin.topo-proc:main',
-            'topo-corpus = bin.topo-corpus:main',
+            # 'topo-test = topogram.cli:main',
+            'topo-viz = topogram.cli:topo_viz',
+            'topo-proc = topogram.cli:topo_proc',
+            'topo-corpus = topogram.cli:topo_corpus',
         ],
     },
       classifiers = [
@@ -33,7 +35,8 @@ setup(
       'networkx',
       "jieba",
       "chardet",
-      "python-dateutil"
+      "python-dateutil",
+      "pymongo"
       ],
       test_suite='tests'
       )
