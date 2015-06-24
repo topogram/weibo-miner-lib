@@ -4,7 +4,7 @@ from setuptools import setup,find_packages
 setup(
       name = "topogram",
       packages = find_packages(exclude=['tests']) ,
-      version = "0.0.2",
+      version = "0.0.9a", # [major].[minor].[release]
       description = "Network Analysis",
       author = "Clement Renaud",
       author_email = "clement.renaud@gmail.com",
