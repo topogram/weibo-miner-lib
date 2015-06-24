@@ -1,16 +1,25 @@
 # chardet's setup.py
-from setuptools import setup
+from setuptools import setup,find_packages
 
 setup(
       name = "topogram",
-      packages = ["topogram"],
-      version = "0.0.2",
+      packages = find_packages(exclude=['tests']) ,
+      version = "0.0.9a", # [major].[minor].[release]
       description = "Network Analysis",
       author = "Clement Renaud",
       author_email = "clement.renaud@gmail.com",
       url = "http://topogram.io",
       download_url = "http://github.com/topogram/topogram",
+      include_package_data=True,
       keywords = ["network", "visualization", "NLP"],
+      entry_points={
+        'console_scripts': [
+            # 'topo-test = topogram.cli:main',
+            'topo-viz = topogram.cli:topo_viz_main',
+            'topo-proc = topogram.cli:topo_proc_main',
+            'topo-corpus = topogram.cli:topo_corpus_main',
+        ],
+    },
       classifiers = [
       "Programming Language :: Python",
       "Environment :: Other Environment",
@@ -25,8 +34,9 @@ setup(
       install_requires=[
       'networkx',
       "jieba",
-      "python-louvain",
-      "csvvalidator"
+      "chardet",
+      "python-dateutil",
+      "pymongo"
       ],
       test_suite='tests'
       )

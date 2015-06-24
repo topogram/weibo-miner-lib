@@ -5,14 +5,14 @@ import itertools
 import csv
 import chardet
 import codecs
-from datetime import datetime
+
+from datetime import datetime 
 
 from topogram.corpus import Corpus
 from topogram.utils import any2utf8
 
 import logging
 logger = logging.getLogger('topogram.corpora.csvcorpus')
-
 
 class CSVCorpus(Corpus): 
     """
@@ -24,14 +24,14 @@ class CSVCorpus(Corpus):
     CSV is validated based on headers and first row only.
     
     fname = file path
-    timestamp_column="created_at" (should be an existing column name)
+    timestamp="created_at" (should be an existing column name)
     time_pattern='%Y-%m-%dT%H:%M:%S' )
-    text_column="text" (should be an existing column name)
-    source_column="uid" (should be an existing column name)
+    content="text" (should be an existing column name)
+    origin="uid" (should be an existing column name)
  
     """
 
-    def __init__(self, fname, timestamp_column="created_at", time_pattern="%Y-%m-%dT%H:%M:%S", text_column="text", source_column="user_id", additional_columns = []):
+    def __init__(self, fname, timestamp="created_at", time_pattern="%Y-%m-%dT%H:%M:%S", content="text", origin="user_id", adds = []):
         """
         Initialize the corpus from a file.
         """
@@ -39,22 +39,22 @@ class CSVCorpus(Corpus):
         logger.info("loading corpus from %s" % fname)
         self.fname = fname
         self.length = None
-        self.timestamp_column = timestamp_column
+        self.timestamp = timestamp
         self.time_pattern = time_pattern
-        self.text_column = text_column
-        self.source_column = source_column
+        self.content = content
+        self.origin = origin
         self.length = 0
 
-        if additional_columns is None :
-            self.additional_columns =[]
-        elif type(additional_columns) is str : 
-            self.additional_columns = additional_columns.split(",")
-        elif type(additional_columns) is list :
-            self.additional_columns = additional_columns
-        elif type(additional_columns) is unicode :
-            self.additional_columns = any2utf8(additional_columns).split(",")
+        if adds is None :
+            self.adds =[]
+        elif type(adds) is str : 
+            self.adds = adds.split(",")
+        elif type(adds) is list :
+            self.adds = adds
+        elif type(adds) is unicode :
+            self.adds = any2utf8(adds).split(",")
         else :
-            raise TypeError("Wrong type for 'additional_columns")
+            raise TypeError("Wrong type for 'adds")
 
         # load the first few lines, to guess the CSV dialect
         head = ''.join(itertools.islice(open(self.fname, "r"), 5))
@@ -79,6 +79,7 @@ class CSVCorpus(Corpus):
         # store headers
         self.headers = self.reader.fieldnames
 
+        # self.validateCSV()
 
     def raw_sample(self, length):
         """ 
@@ -96,7 +97,7 @@ class CSVCorpus(Corpus):
             if index == length : break
         return sample
 
-    def validate(self):
+    def validateCSV(self):
             """
             Perform several checks on CSV files
 
@@ -110,20 +111,20 @@ class CSVCorpus(Corpus):
                 raise KeyError("CSV file should have headers")
 
             # check if required columns exist
-            if any2utf8(self.timestamp_column) not in self.headers: 
-                raise ValueError("Time column '%s' not present in CSV"%self.timestamp_column)
-            if any2utf8(self.text_column) not in self.headers:
-                raise ValueError("Text column '%s' not present in CSV"%self.text_column)
-            if any2utf8(self.source_column) not in self.headers:
-                raise ValueError("Author column '%s' not present in CSV"%self.source_column)
+            if any2utf8(self.timestamp) not in self.headers: 
+                raise ValueError("Time column '%s' not present in CSV"%self.timestamp)
+            if any2utf8(self.content) not in self.headers:
+                raise ValueError("Text column '%s' not present in CSV"%self.content)
+            if any2utf8(self.origin) not in self.headers:
+                raise ValueError("Author column '%s' not present in CSV"%self.origin)
 
-            for column_name in self.additional_columns : 
+            for column_name in self.adds : 
                 if any2utf8(column_name) not in self.headers:
                     raise ValueError("Column '%s' not present in CSV"%column_name)
 
             # check time format (will raise ValueError)
             first_line = self.reader.next()
-            timestamp = first_line[any2utf8(self.timestamp_column)]
+            timestamp = first_line[any2utf8(self.timestamp)]
             datetime.strptime(timestamp, any2utf8(self.time_pattern))
 
     # def reset_timeframe(self):
@@ -137,11 +138,11 @@ class CSVCorpus(Corpus):
         for index, row in enumerate(self.reader, start=1):
             result = {}
 
-            result["text_column"] = any2utf8(row[any2utf8(self.text_column)])
-            result["time_column"] = datetime.strptime(row[any2utf8(self.timestamp_column)], self.time_pattern)
-            result["source_column"] = row[any2utf8(self.source_column)]
+            result["content"] = any2utf8(row[any2utf8(self.content)])
+            result["timestamp"] = datetime.strptime(row[any2utf8(self.timestamp)], self.time_pattern)
+            result["origin"] = row[any2utf8(self.origin)]
 
-            for column_name in self.additional_columns :
+            for column_name in self.adds :
                 result[any2utf8(column_name)] = any2utf8(row[any2utf8(column_name)])
 
             self.length =  self.length + 1  # store the total number of CSV rows

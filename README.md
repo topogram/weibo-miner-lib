@@ -11,67 +11,12 @@ Topogram is a data mining library to produce time-based networks and maps from t
 
 With tools for validation and parsing, Topogram provides a pipeline to create visualizations of relationships between multiple entities like people, words, time and places. Based on [networkx](http://netwokx.readthedocs.org), [NLTK](http://www.nltk.org) and [d3js](http://d3js.org), it provides a complete toolkit to create advanced social network analysis from raw datasets. 
 
-Read the complete documentation at [topogram.readthedocs.org](http://topogram.readthedocs.org)
 
 
 ## Usage
 
-Topogram relies on three core components : corpus, extractors  and visualizers.
+Read the documentation at [topogram.readthedocs.org](http://topogram.readthedocs.org)
 
-#### 1. Corpus : describe your dataset
-
-```python
-
-from topogram.corpora.csv_file import CSVCorpus 
-
-# import corpus
-csv_corpus = CSVCorpus('data.csv',
-    source_column="user_id",
-    text_column="text",
-    timestamp_column="created_at",
-    time_pattern="%Y-%m-%d %H:%M:%S",
-    additional_columns=["permission_denied", "deleted_last_seen"])
-
-# validate corpus formatting
-try :
-    csv_corpus.validate()
-except ValueError, e:
-    print e.message, 422
-
-```
-
-#### 2. Extractor : process your information
-
-```python
-
-from topogram.topograms.basic import BasicTopogram
-
-# init Chinese NLP
-nlp = ChineseNLP()
-
-# init with NLP analysis
-topogram = BasicTopogram(corpus=csv_corpus, processors=[nlp])
-
-# process  data
-topogram.process() 
-```
-
-#### 3. Visualizer : get your viz data
-
-```python
-
-# words network 
-words = topogram.words_to_d3js(max_nodes=200)
-
-# timeseries
-timeseries = topogram.get_timeseries(time_scale="minute")
-
-# select only the time frame between 2001 Jan 1 and Dec 31
-topogram.setTimeFrame(start=datetime(2000, 1, 1) , end=datetime(2001, 31, 12))
-
-# export map coordinates
-map = topogram.get_map(networks=["words"], projection="orthographic")
-```
 
 ## Install
 
