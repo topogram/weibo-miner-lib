@@ -2,3 +2,4 @@ sphinx
 nose
 rednose
 pytest-sugar
+coverage

@@ -15,9 +15,9 @@ setup(
       entry_points={
         'console_scripts': [
             # 'topo-test = topogram.cli:main',
-            'topo-viz = topogram.cli:topo_viz',
-            'topo-proc = topogram.cli:topo_proc',
-            'topo-corpus = topogram.cli:topo_corpus',
+            'topo-viz = topogram.cli:topo_viz_main',
+            'topo-proc = topogram.cli:topo_proc_main',
+            'topo-corpus = topogram.cli:topo_corpus_main',
         ],
     },
       classifiers = [
