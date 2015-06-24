@@ -33,7 +33,7 @@ setup(
       'networkx',
       "jieba",
       "chardet",
-      "dateutil"
+      "python-dateutil"
       ],
       test_suite='tests'
       )
