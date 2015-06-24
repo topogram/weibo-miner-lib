@@ -2,3 +2,4 @@ jieba
 networkx
 chardet
 python-dateutil
+mongo
