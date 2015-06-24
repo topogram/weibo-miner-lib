@@ -1,3 +1,4 @@
 jieba
 networkx
 chardet
+dateutil

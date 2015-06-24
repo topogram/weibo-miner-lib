@@ -87,7 +87,7 @@ Describe your dataset into a corpus
  
     # init corpus
     corpus = Corpus(
-        dict,
+        "dict",
         timestamp_column = "datetime",
         time_pattern = None,
         content_column ="venue",

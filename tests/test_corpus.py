@@ -13,7 +13,7 @@ class TestDefaultCorpus(unittest.TestCase):
 
     def setUp(self): 
         self.corpus = Corpus(
-                    dict,
+                    "dict",
                      timestamp="created_at", 
                      time_pattern="%Y-%m-%dT%H:%M:%S", 
                      content="content", 

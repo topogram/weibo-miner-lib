@@ -11,6 +11,13 @@ setup(
       url = "http://topogram.io",
       download_url = "http://github.com/topogram/topogram",
       keywords = ["network", "visualization", "NLP"],
+      entry_points={
+        'console_scripts': [
+            'topo-viz = bin.topo-viz:main',
+            'topo-proc = bin.topo-proc:main',
+            'topo-corpus = bin.topo-corpus:main',
+        ],
+    },
       classifiers = [
       "Programming Language :: Python",
       "Environment :: Other Environment",
@@ -25,7 +32,8 @@ setup(
       install_requires=[
       'networkx',
       "jieba",
-      "chardet"
+      "chardet",
+      "dateutil"
       ],
       test_suite='tests'
       )

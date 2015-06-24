@@ -4,7 +4,9 @@
 import pickle
 import logging
 from datetime import datetime
+from dateutil import parser
 
+import json
 from utils import any2utf8
 
 logger = logging.getLogger('topogram.corpus')
@@ -23,19 +25,27 @@ class Corpus:
     def __init__(self,  
                  typeof,
                  timestamp="created_at", 
-                 time_pattern="%Y-%m-%dT%H:%M:%S", 
+                 time_pattern=None, 
                  content="text", 
                  origin="user_id", 
                  adds = []
                  ):
 
-        self.type = typeof
-        self.timestamp = timestamp # time
-        self.time_pattern = time_pattern # if timestamp is a datetime already use None else use %time parser
-        self.content = content # some content
-        self.origin = origin # origin column
-        self.adds = adds # additional columns
+        self.format = self.parse_keys(typeof)
+        self.timestamp = self.parse_keys(timestamp) # time
+        
+        self.content = self.parse_keys(content) # some content
+        self.origin = self.parse_keys(origin) # origin column
+        self.adds = self.parse_keys(adds) # additional columns
 
+        if time_pattern is None : 
+            self.time_pattern = None
+        elif isinstance(time_pattern, datetime) : 
+            self.time_pattern = time_pattern
+        else: 
+           self.time_pattern = any2utf8(time_pattern) 
+
+        # if timestamp is a datetime already use None else use %time parser
     def __iter__(self):
         """
         Iterate over the corpus, yielding one document at a time.
@@ -58,38 +68,87 @@ class Corpus:
         # self.__dict__ = data
         raise NotImplementedError("load the corpus")
 
-
     def __call__(self, row, validation=False):
         """
         Receive a dict or an array of data and parse it according to the description
         
         """
+        
+        if self.format == "json" :
+            row = json.loads(row)
 
+        # is already a dict
         result = {}
 
         # parse content
-        content = row[any2utf8( self.content )]
-        if type(content) is str : result["content"] = any2utf8(content)
-        else : result["content"] = content
+        content = self.lookup(row, self.content)
+
+        if type(content) is str : 
+            result["content"] = any2utf8(content)
+        else : 
+            result["content"] = content
 
         # parse time
-        if self.time_pattern  is None : 
-            result["timestamp"] = row[any2utf8(self.timestamp)] # already a datetime 
+        ts = self.lookup(row, self.timestamp)
+        
+        if self.time_pattern is None : 
+            result["timestamp"] = parser.parse(ts)
+        elif isinstance(self.time_pattern, datetime) : 
+            result["timestamp"] =  ts# already a datetime 
         else : 
-            result["timestamp"] = datetime.strptime(row[any2utf8(self.timestamp)], self.time_pattern)
+            result["timestamp"] = datetime.strptime(ts, self.time_pattern)
 
         # origin 
-        origin = row[any2utf8(self.origin)]
-        if type(origin) is str : result["origin"] = any2utf8(origin)
-        else: result["origin"] = origin
+        origin = self.lookup(row, self.origin)
+
+        if type(origin) is str : 
+            result["origin"] = any2utf8(origin)
+        else: 
+            result["origin"] = origin
 
         # additional fields
         for column_name in self.adds :
             try : 
-                result[any2utf8(column_name)] = row[any2utf8(column_name)]
+                result[column_name] = self.lookup(row, column_name)
             except:
-                result[any2utf8(column_name)] = None
+                result[column_name] = None
         return result
+
+
+    def parse_keys(self, keys):
+        """Check if it is a list and parse each element into a proper format"""
+
+        if type(keys) is list :
+            return [self.parse_key(key) for key in keys]
+        else : 
+            return self.parse_key(keys)
+
+    def parse_key(self, key): 
+        """Extract JS-like path from key"""
+
+        if type(key) is not str :
+            raise ValueError("Keys should be str")
+
+        path= key.split(".")
+
+        if len(path) == 1 : # is a string without a path
+            return any2utf8(key)
+
+        else : # is a JS path like "this.property"
+            return [any2utf8(i) for i in path]
+
+    def lookup(self, dic, key):
+        if type(key) is list:
+            d = dic
+            for k in key :
+                try :
+                    d= d.get(k)
+                except :
+                    return None
+            return d
+        else :
+            return dic.get(key) 
+
 
     # def load(cls, fname):
     #     """

@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import json
 from topogram.processor import Processor
-
 from datetime import  datetime 
 
 class TimeRounder(Processor):
 
-    def __init__(self, timescale):
+    def __init__(self, timescale, format=None):
         authorized_timescales = ["second", "minute", "hour", "day", "month", "year"]
         if timescale not in authorized_timescales :
             raise ValueError("Unauthorized timescale (only : y,m,d,h,m,s)")
@@ -31,6 +31,9 @@ class TimeRounder(Processor):
 
     def round_to_year(self,dt):
         return datetime(dt.year, 1, 1)
+
+    def process_row(self, row):
+        return self(row["timestamp"])
 
     def __call__(self, timestamp):
 

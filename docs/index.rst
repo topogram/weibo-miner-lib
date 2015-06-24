@@ -45,7 +45,7 @@ Read  the documentation for other corpora, formats, processors or visualization 
 
     install
     quickstart
-
+    cli
     tutorials
 
 
