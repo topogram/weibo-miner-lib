@@ -113,7 +113,7 @@ class TestNLP(unittest.TestCase):
         self.nlp = NLP("zh") #chinese
 
     def test_available_languages(self):
-        self.assertRaises(NotImplementedError, lambda : NLP("fr"))
+        self.assertRaises(NotImplementedError, lambda : NLP("martien"))
 
     def test_add_stopwords(self):
         count_stopwords = len(self.nlp.stopwords)
