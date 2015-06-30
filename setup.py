@@ -41,6 +41,9 @@ setup(
       "textblob",
       "textblob-fr"
       ],
+      setup_requires=[
+      "textblob"
+      ],
       test_suite='tests'
       )
 
