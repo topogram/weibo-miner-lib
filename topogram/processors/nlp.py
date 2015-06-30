@@ -23,7 +23,7 @@ class NLP(Processor):
     def __init__(self, language): 
         logger.info("init NLP class for %s"%language)
 
-        if language not in ["zh", "en"]:
+        if language not in ["zh", "en", "fr"]:
             raise NotImplementedError('%s : language not supported yet.'%language)
         else :
             self.parser = importlib.import_module( "topogram.processors.languages.%s"%language)
