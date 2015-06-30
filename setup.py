@@ -36,7 +36,13 @@ setup(
       "jieba",
       "chardet",
       "python-dateutil",
-      "pymongo"
+      "pymongo",
+      "nltk",
+      "textblob",
+      "textblob-fr"
+      ],
+      setup_requires=[
+      "textblob"
       ],
       test_suite='tests'
       )
