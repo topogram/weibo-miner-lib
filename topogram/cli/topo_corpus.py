@@ -24,6 +24,7 @@ def parse_args():
     p.add_argument('--format', '-j', default="json")
     p.add_argument('--longitude', '-L', default="0")
     p.add_argument('--latitude', '-l', default="0")
+    p.add_argument('--additional', '-a', default="0")
 
 
 
@@ -42,7 +43,8 @@ def get_corpus(args):
                     timestamp=args.timestamp,
                     time_pattern=args.time_pattern,
                     longitude=args.longitude,
-                    latitude=args.latitude
+                    latitude=args.latitude,
+                    adds=args.additional
                 )
     return corpus
 

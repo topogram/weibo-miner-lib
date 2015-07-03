@@ -22,6 +22,7 @@ def parse_args():
 
     p.add_argument("-v", "--vizmodel", help='Specifies the processor to use. Available : timeseries, network', required=True)
     p.add_argument("-c", "--config", help='Config for the processor.',default="minute")
+    p.add_argument("-r", "--content", help='Add content.', default=None)
     p.add_argument('--format', '-j', default="json")
 
     # in/out format with default to stdin / stdout
@@ -36,7 +37,7 @@ def get_viz(args):
     elif args.vizmodel == "network":
         viz = Network(args.config)
     elif args.vizmodel == "MapPoint":
-        viz = MapPoint()
+        viz = MapPoint(content=args.content)
 
     else :
         raise NotImplemented("This option doesn't exist")
