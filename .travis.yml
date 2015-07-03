@@ -10,3 +10,5 @@ script:
     - nosetests
     - coverage run --source=topogram setup.py test
 after_success: coveralls
+notifications:
+    email: false
