@@ -27,8 +27,10 @@ class Corpus:
                  timestamp="created_at", 
                  time_pattern=None, 
                  content="text", 
-                 origin="user_id", 
-                 adds = []
+                 origin="user_id",
+                 longitude=None,
+                 latitude=None, 
+                 adds=[]
                  ):
 
         self.format = self.parse_keys(typeof)
@@ -37,6 +39,9 @@ class Corpus:
         self.content = self.parse_keys(content) # some content
         self.origin = self.parse_keys(origin) # origin column
         self.adds = self.parse_keys(adds) # additional columns
+        
+        self.longitude = self.parse_keys(longitude) #longitude
+        self.latitude = self.parse_keys(latitude) #latitude
 
         if time_pattern is None : 
             self.time_pattern = None
@@ -105,6 +110,13 @@ class Corpus:
             result["origin"] = any2utf8(origin)
         else: 
             result["origin"] = origin
+        #longitude
+        if self.longitude is not None:
+            result["longitude"] = self.lookup(row, self.longitude)
+        #latitude
+        if self.latitude is not None:
+            result["latitude"] = self.lookup(row, self.latitude)
+
 
         # additional fields
         for column_name in self.adds :
@@ -117,6 +129,7 @@ class Corpus:
 
     def parse_keys(self, keys):
         """Check if it is a list and parse each element into a proper format"""
+        if keys is None : return None
 
         if type(keys) is list :
             return [self.parse_key(key) for key in keys]

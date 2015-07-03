@@ -29,7 +29,7 @@ class TestTopoCorpus(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self.parser.parse_args([])
 
-    def test_get_coprus(self):
+    def test_get_corpus(self):
 
         args = self.parser.parse_args(['-t', 'time', '-r', 'venue', '-c', "artists"])
         c = topo_corpus.get_corpus(args)
