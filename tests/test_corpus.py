@@ -18,7 +18,7 @@ class TestDefaultCorpus(unittest.TestCase):
                      time_pattern="%Y-%m-%dT%H:%M:%S", 
                      content="content", 
                      origin="user_id", 
-                     adds = ["test"]
+                     adds=["test"]
                      )
 
     def test_properties_stored(self):

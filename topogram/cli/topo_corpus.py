@@ -16,12 +16,16 @@ def parse_args():
     # parse command line arguments
     p = argparse.ArgumentParser()
 
-    p.add_argument('--timestamp', '-t', default="created_at", required=True)
+    p.add_argument('--timestamp', '-t', default="created_at", required=False)
     p.add_argument('--time-pattern', '-p', default=None)
     p.add_argument('--origin', '-r', default="user_id")
     p.add_argument('--content', '-c', default="text", required=True)
     p.add_argument('--exclude', '-e', default="ObjectId")
     p.add_argument('--format', '-j', default="json")
+    p.add_argument('--longitude', '-L', default="0")
+    p.add_argument('--latitude', '-l', default="0")
+
+
 
     # in/out format with default to stdin / stdout
     p.add_argument('infile', nargs='?', type=argparse.FileType('r'), default=sys.stdin, help='Specifies the intput file.  The default is stdin.')
@@ -36,7 +40,9 @@ def get_corpus(args):
                     content=args.content,
                     origin=args.origin,
                     timestamp=args.timestamp,
-                    time_pattern=args.time_pattern
+                    time_pattern=args.time_pattern,
+                    longitude=args.longitude,
+                    latitude=args.latitude
                 )
     return corpus
 
