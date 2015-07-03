@@ -13,6 +13,8 @@ signal(SIGPIPE,SIG_DFL)
 
 from topogram.vizparsers.time_series import TimeSeries
 from topogram.vizparsers.network import Network
+from topogram.vizparsers.map_point import MapPoint
+
 
 def parse_args():
     # parse command line arguments
@@ -33,6 +35,9 @@ def get_viz(args):
         viz = TimeSeries(timescale=args.config)
     elif args.vizmodel == "network":
         viz = Network(args.config)
+    elif args.vizmodel == "MapPoint":
+        viz = MapPoint()
+
     else :
         raise NotImplemented("This option doesn't exist")
     return viz
