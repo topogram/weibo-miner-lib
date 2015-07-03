@@ -112,6 +112,7 @@ class Corpus:
                 result[column_name] = self.lookup(row, column_name)
             except:
                 result[column_name] = None
+
         return result
 
 
@@ -138,6 +139,10 @@ class Corpus:
             return [any2utf8(i) for i in path]
 
     def lookup(self, dic, key):
+        """Get a dict property from a key or a list of keys
+            dic : a dict object
+            key : a str or a list 
+        """
         if type(key) is list:
             d = dic
             for k in key :
