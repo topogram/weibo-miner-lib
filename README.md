@@ -24,7 +24,7 @@ Read the documentation at [topogram.readthedocs.org](http://topogram.readthedocs
 
 or 
 
-    pip install git://github.com/topogram/topogram.git#egg=topogram
+    pip install git+http://github.com/topogram/topogram.git#egg=topogram
 
 ## Troubleshooting
 
