@@ -14,21 +14,21 @@ import logging
 logger = logging.getLogger('topogram.corpora.csvcorpus')
 
 
-class CSVCorpus(Corpus): 
+class CSVCorpus(Corpus):
     """
     Corpus in CSV format.
-    
+
     The CSV delimiter, headers etc. are guessed automatically
     based on the file content.
-    
+
     CSV is validated based on headers and first row only.
-    
+
     fname = file path
     timestamp_column="created_at" (should be an existing column name)
     time_pattern='%Y-%m-%dT%H:%M:%S' )
     text_column="text" (should be an existing column name)
     source_column="uid" (should be an existing column name)
- 
+
     """
 
     def __init__(self, fname, timestamp_column="created_at", time_pattern="%Y-%m-%dT%H:%M:%S", text_column="text", source_column="user_id", additional_columns = []):
@@ -47,7 +47,7 @@ class CSVCorpus(Corpus):
 
         if additional_columns is None :
             self.additional_columns =[]
-        elif type(additional_columns) is str : 
+        elif type(additional_columns) is str :
             self.additional_columns = additional_columns.split(",")
         elif type(additional_columns) is list :
             self.additional_columns = additional_columns
@@ -66,7 +66,7 @@ class CSVCorpus(Corpus):
         encoding = chardet.detect(head)
         self.encoding  = encoding['encoding']
 
-        if encoding['confidence'] <  0.99 or encoding['encoding'] != 'utf-8': 
+        if encoding['confidence'] <  0.99 or encoding['encoding'] != 'utf-8':
             raise TypeError("File has an unknown encoding : %s. Please try UTF-8 for better compatibility"% encoding['encoding'])
 
         logger.info("encoding detected as %s" % (encoding["encoding"]))
@@ -81,9 +81,9 @@ class CSVCorpus(Corpus):
 
 
     def raw_sample(self, length):
-        """ 
+        """
         Get a sample of the raw corpus of a specific length.
-        
+
         args : length should be an int
         returns : list of row (row are dict)
         """
@@ -102,22 +102,22 @@ class CSVCorpus(Corpus):
 
             * file should have headers
             * columns should exist
-            * timestamp format should be valid 
-            
+            * timestamp format should be valid
+
             """
             # headers are required
             if not self.has_headers :
                 raise KeyError("CSV file should have headers")
 
             # check if required columns exist
-            if any2utf8(self.timestamp_column) not in self.headers: 
+            if any2utf8(self.timestamp_column) not in self.headers:
                 raise ValueError("Time column '%s' not present in CSV"%self.timestamp_column)
             if any2utf8(self.text_column) not in self.headers:
                 raise ValueError("Text column '%s' not present in CSV"%self.text_column)
             if any2utf8(self.source_column) not in self.headers:
                 raise ValueError("Author column '%s' not present in CSV"%self.source_column)
 
-            for column_name in self.additional_columns : 
+            for column_name in self.additional_columns :
                 if any2utf8(column_name) not in self.headers:
                     raise ValueError("Column '%s' not present in CSV"%column_name)
 
@@ -133,7 +133,7 @@ class CSVCorpus(Corpus):
     def __iter__(self):
         """
         Iterate over the corpus, returning a tuple with text as a 'str' and timestamp as a 'datetime' object.
-        """ 
+        """
         for index, row in enumerate(self.reader, start=1):
             result = {}
 
@@ -142,7 +142,12 @@ class CSVCorpus(Corpus):
             result["source_column"] = row[any2utf8(self.source_column)]
 
             for column_name in self.additional_columns :
-                result[any2utf8(column_name)] = any2utf8(row[any2utf8(column_name)])
+                column_content = any2utf8(row[any2utf8(column_name)])
+                if column_content.isdigit():
+                    result[any2utf8(column_name)] = int(column_content)
+                else :
+                    result[any2utf8(column_name)] = column_content
+
 
             self.length =  self.length + 1  # store the total number of CSV rows
 

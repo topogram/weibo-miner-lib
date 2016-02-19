@@ -18,20 +18,21 @@ class TestCSVCorpus(unittest.TestCase):
         self.assertEqual(self.corpus.dialect.delimiter, ",")
         self.assertTrue(self.corpus.headers, True)
 
-    def test_wrong_column_names(self): 
+    def test_wrong_column_names(self):
         """ Wrong column names should raise ValueError """
         self.corpus.source_column="haha"
         self.assertRaises(ValueError, lambda : self.corpus.validate())
 
     def test_wrong_date_format(self):
-        """ Wrong data format should raise a ValueError """  
+        """ Wrong data format should raise a ValueError """
         self.corpus.source_column="%Y-%m-%dT%H:%M:%S"
         self.assertRaises(ValueError, lambda : self.corpus.validate())
 
     def test_iterate_corpus(self):
-        """ Corpus should be an interable """ 
+        """ Corpus should be an interable """
         for row in self.corpus:
             self.assertTrue(isinstance(row["text_column"], str))
+            self.assertTrue(isinstance(row["time_column"], datetime))
             self.assertTrue(isinstance(row["time_column"], datetime))
 
     def test_store_headers(self):
@@ -62,14 +63,14 @@ class TestCSVCorpus(unittest.TestCase):
         self.assertRaises(ValueError, lambda : bad_corpus.validate())
 
     def test_additional_columns(self):
-        """ Additional column should be parsed and returned as string"""
+        """ Additional column should be parsed and returned as string or float depending on their"""
         csv_path = os.path.join(os.getcwd(), "tests/sampleweibo.csv")
         corpus = CSVCorpus(csv_path, source_column="uid", time_pattern="%Y-%m-%d %H:%M:%S", additional_columns=["image", "source"])
         self.assertEquals(["image", "source"], corpus.additional_columns)
         for row in corpus :
             self.assertEquals(len(row), 5)
-            for col in corpus.additional_columns : 
-                self.assertEquals(type(row[col]), str)
+            self.assertEquals(type(row["source"]), str)
+            self.assertEquals(type(row["image"]), int)
 
 
 
