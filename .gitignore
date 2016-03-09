@@ -5,7 +5,7 @@ __pycache__/
 test.py
 
 MANIFEST
-MANIFEST.in
+# MANIFEST.in
 venv
 *.json
 
